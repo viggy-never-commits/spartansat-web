@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Open Positions — SpartanSat · SJSU</title>
+  <meta name="description" content="Join SpartanSat — SJSU's student-led CubeSat mission. View open positions across all subteams." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@300;400;500;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+
+  <style>
+    /* ── VARIABLES ── */
+    :root {
+      --gold:        #E5A823;
+      --gold-dim:    #b8841a;
+      --gold-glow:   rgba(229,168,35,0.18);
+      --navy:        #050d1a;
+      --navy-mid:    #0a1628;
+      --navy-light:  #0f2040;
+      --slate:       #1a2d4a;
+      --white:       #f0f4ff;
+      --white-dim:   rgba(240,244,255,0.6);
+      --white-faint: rgba(240,244,255,0.12);
+      --teal:        #4db8c8;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--navy);
+      color: var(--white);
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 400;
+      overflow-x: hidden;
+      cursor: none;
+      min-height: 100vh;
+    }
+
+    /* ── CUSTOM CURSOR ── */
+    #cursor {
+      position: fixed;
+      width: 12px; height: 12px;
+      border-radius: 50%;
+      background: var(--gold);
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: transform 0.1s, background 0.2s, box-shadow 0.2s;
+      box-shadow: 0 0 8px rgba(229,168,35,0.6);
+    }
+    #cursor-ring {
+      position: fixed;
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      border: 1px solid rgba(229,168,35,0.5);
+      pointer-events: none;
+      z-index: 9998;
+      transform: translate(-50%, -50%);
+      transition: transform 0.18s ease, width 0.2s, height 0.2s, border-color 0.2s;
+    }
+    body:has(a:hover) #cursor,
+    body:has(button:hover) #cursor { background: #fff; box-shadow: 0 0 16px var(--gold), 0 0 32px rgba(229,168,35,0.4); transform: translate(-50%,-50%) scale(1.5); }
+    body:has(a:hover) #cursor-ring,
+    body:has(button:hover) #cursor-ring { width: 52px; height: 52px; border-color: var(--gold); }
+
+    /* ── STARFIELD ── */
+    #starfield {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 3rem;
+      height: 70px;
+      background: rgba(5,13,26,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(229,168,35,0.2);
+      transition: border-color 0.3s;
+    }
+    nav:hover { border-bottom-color: rgba(229,168,35,0.5); }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+    }
+    .nav-logo-badge {
+      width: 38px; height: 38px;
+      border: 2px solid var(--gold);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.6rem;
+      font-weight: 700;
+      color: var(--gold);
+      letter-spacing: 0.05em;
+      line-height: 1.2;
+      text-align: center;
+      transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+    }
+    .nav-logo:hover .nav-logo-badge {
+      background: var(--gold);
+      color: var(--navy);
+      box-shadow: 0 0 16px rgba(229,168,35,0.5);
+    }
+    .nav-logo-text {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--white);
+      letter-spacing: 0.12em;
+    }
+    .nav-logo-text span { color: var(--gold); }
+
+    .nav-links {
+      display: flex;
+      gap: 2.5rem;
+      list-style: none;
+    }
+    .nav-links a {
+      text-decoration: none;
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 600;
+      font-size: 0.85rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--white-dim);
+      transition: color 0.2s, text-shadow 0.2s;
+      position: relative;
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -4px; left: 0; right: 0;
+      height: 1px;
+      background: var(--gold);
+      transform: scaleX(0);
+      transition: transform 0.25s;
+    }
+    .nav-links a:hover { color: var(--gold); text-shadow: 0 0 12px rgba(229,168,35,0.5); }
+    .nav-links a:hover::after { transform: scaleX(1); }
+    .nav-links a.active { color: var(--gold); }
+    .nav-links a.active::after { transform: scaleX(1); }
+
+    /* ── PAGE WRAPPER ── */
+    .page {
+      position: relative;
+      z-index: 2;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 110px 3rem 5rem;
+    }
+
+    /* ── PAGE HEADER ── */
+    .page-header {
+      margin-bottom: 2.5rem;
+      opacity: 0;
+      animation: fadeUp 0.7s ease 0.2s forwards;
+    }
+    .page-eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      margin-bottom: 0.75rem;
+    }
+    .page-eyebrow-line { width: 32px; height: 1px; background: var(--gold); }
+    .page-eyebrow-text {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.25em;
+      color: var(--gold);
+      text-transform: uppercase;
+    }
+    .page-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      font-weight: 900;
+      letter-spacing: -0.01em;
+      line-height: 1.1;
+      margin-bottom: 0.6rem;
+    }
+    .page-subtitle {
+      font-size: 1.05rem;
+      color: var(--white-dim);
+      line-height: 1.6;
+      max-width: 560px;
+    }
+
+    /* ── LAYOUT: sidebar + listings ── */
+    .listings-layout {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      gap: 2rem;
+      align-items: start;
+      opacity: 0;
+      animation: fadeUp 0.7s ease 0.4s forwards;
+    }
+
+    /* ── SIDEBAR FILTERS ── */
+    .sidebar {
+      position: sticky;
+      top: 90px;
+      background: var(--navy-mid);
+      border: 1px solid rgba(229,168,35,0.12);
+      border-radius: 6px;
+      padding: 1.5rem;
+    }
+    .sidebar-title {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1rem;
+    }
+    .filter-group { margin-bottom: 1.4rem; }
+    .filter-group-label {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--white-dim);
+      margin-bottom: 0.6rem;
+    }
+    .filter-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.3rem 0.75rem;
+      margin: 0.2rem 0.2rem 0.2rem 0;
+      border: 1px solid rgba(229,168,35,0.2);
+      border-radius: 3px;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: var(--white-dim);
+      cursor: none;
+      transition: border-color 0.2s, color 0.2s, background 0.2s;
+      user-select: none;
+    }
+    .filter-chip:hover,
+    .filter-chip.active {
+      border-color: var(--gold);
+      color: var(--gold);
+      background: var(--gold-glow);
+    }
+    .filter-chip .chip-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+      opacity: 0.6;
+    }
+
+    .results-count {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.65rem;
+      color: rgba(240,244,255,0.3);
+      letter-spacing: 0.1em;
+      margin-top: 1.2rem;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(229,168,35,0.08);
+    }
+    .results-count span { color: var(--gold); }
+
+    /* ── LISTINGS PANEL ── */
+    .listings-panel { display: flex; flex-direction: column; gap: 0; }
+
+    .listings-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid rgba(229,168,35,0.1);
+    }
+    .toolbar-count {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--white-dim);
+      letter-spacing: 0.1em;
+    }
+    .toolbar-count strong { color: var(--gold); font-weight: 400; }
+    .toolbar-sort {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 0.8rem;
+      color: var(--white-dim);
+      letter-spacing: 0.08em;
+    }
+
+    /* ── JOB CARD ── */
+    .job-card {
+      position: relative;
+      background: var(--navy-mid);
+      border: 1px solid rgba(229,168,35,0.1);
+      border-left: 3px solid transparent;
+      border-radius: 4px;
+      padding: 1.4rem 1.6rem;
+      margin-bottom: 0.75rem;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 1rem;
+      align-items: start;
+      transition: border-color 0.2s, background 0.2s, transform 0.2s;
+      cursor: none;
+      overflow: hidden;
+    }
+    .job-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 60% 80% at 0% 50%, rgba(229,168,35,0.03) 0%, transparent 70%);
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+    }
+    .job-card:hover {
+      border-color: rgba(229,168,35,0.35);
+      border-left-color: var(--gold);
+      background: var(--navy-light);
+      transform: translateX(2px);
+    }
+    .job-card:hover::before { opacity: 1; }
+
+    /* card — selected state */
+    .job-card.selected {
+      border-color: rgba(229,168,35,0.5);
+      border-left-color: var(--gold);
+      background: var(--navy-light);
+    }
+
+    .job-card-left { min-width: 0; }
+
+    .job-card-top {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-bottom: 0.35rem;
+      flex-wrap: wrap;
+    }
+
+    .job-subsystem {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.62rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--teal);
+      opacity: 0.85;
+    }
+    .job-divider {
+      width: 3px; height: 3px;
+      border-radius: 50%;
+      background: rgba(240,244,255,0.2);
+      flex-shrink: 0;
+    }
+    .job-wbs {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.15em;
+      color: rgba(240,244,255,0.25);
+    }
+
+    .job-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: var(--white);
+      margin-bottom: 0.5rem;
+      transition: color 0.2s;
+    }
+    .job-card:hover .job-title { color: var(--gold); }
+
+    .job-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem 1.2rem;
+      margin-bottom: 0.7rem;
+    }
+    .job-meta-item {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.82rem;
+      color: var(--white-dim);
+      letter-spacing: 0.04em;
+    }
+    .job-meta-item svg {
+      opacity: 0.5;
+      flex-shrink: 0;
+    }
+
+    .job-desc {
+      font-size: 0.9rem;
+      line-height: 1.6;
+      color: var(--white-dim);
+      max-width: 580px;
+    }
+
+    .job-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-top: 0.9rem;
+    }
+    .job-tag {
+      padding: 0.2rem 0.6rem;
+      border: 1px solid rgba(229,168,35,0.15);
+      border-radius: 2px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(240,244,255,0.45);
+    }
+
+    /* card — right column */
+    .job-card-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 0.75rem;
+      flex-shrink: 0;
+    }
+
+    .job-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.25rem 0.65rem;
+      border-radius: 2px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+    .job-badge.open {
+      background: rgba(77,184,200,0.1);
+      border: 1px solid rgba(77,184,200,0.3);
+      color: var(--teal);
+    }
+    .job-badge.lead {
+      background: rgba(229,168,35,0.1);
+      border: 1px solid rgba(229,168,35,0.3);
+      color: var(--gold);
+    }
+    .job-badge .badge-dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: currentColor;
+      animation: pulseDot 2s ease-in-out infinite;
+    }
+    @keyframes pulseDot {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    .btn-apply {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.55rem 1.25rem;
+      background: var(--gold);
+      color: var(--navy);
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      text-decoration: none;
+      border-radius: 3px;
+      border: none;
+      transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
+      cursor: none;
+      white-space: nowrap;
+    }
+    .btn-apply:hover {
+      background: #f0b830;
+      box-shadow: 0 0 20px rgba(229,168,35,0.45);
+      transform: translateY(-1px);
+    }
+    .btn-apply:active { transform: translateY(0); }
+
+    .job-posted {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.6rem;
+      color: rgba(240,244,255,0.2);
+      letter-spacing: 0.08em;
+      text-align: right;
+    }
+
+    /* ── NO RESULTS ── */
+    .no-results {
+      display: none;
+      text-align: center;
+      padding: 4rem 2rem;
+      color: var(--white-dim);
+    }
+    .no-results.visible { display: block; }
+    .no-results-icon {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 2rem;
+      color: rgba(229,168,35,0.15);
+      margin-bottom: 1rem;
+    }
+    .no-results p { font-size: 0.9rem; }
+
+    /* ── FOOTER ── */
+    footer {
+      position: relative;
+      z-index: 2;
+      border-top: 1px solid rgba(229,168,35,0.15);
+      padding: 2.5rem 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(5,13,26,0.9);
+    }
+    .footer-left {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--white-dim);
+      letter-spacing: 0.12em;
+    }
+    .footer-left span { color: var(--gold); }
+    .footer-center {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.65rem;
+      color: rgba(240,244,255,0.25);
+      letter-spacing: 0.12em;
+      text-align: center;
+    }
+    .footer-right {
+      font-size: 0.78rem;
+      color: rgba(240,244,255,0.3);
+      letter-spacing: 0.05em;
+    }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      nav { padding: 0 1.5rem; }
+      .nav-links { display: none; }
+      .page { padding: 100px 1.5rem 4rem; }
+      .listings-layout { grid-template-columns: 1fr; }
+      .sidebar { position: static; }
+      .job-card { grid-template-columns: 1fr; }
+      .job-card-right { flex-direction: row; align-items: center; flex-wrap: wrap; }
+      footer { flex-direction: column; gap: 1rem; text-align: center; }
+      body { cursor: auto; }
+      #cursor, #cursor-ring { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div id="cursor"></div>
+  <div id="cursor-ring"></div>
+  <canvas id="starfield"></canvas>
+
+  <!-- NAV -->
+  <nav>
+    <a class="nav-logo" href="/">
+      <div class="nav-logo-badge">SS<br>SJSU</div>
+      <span class="nav-logo-text">SPARTAN<span>Sat</span></span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="/#mission">Mission</a></li>
+      <li><a href="/#payloads">Payloads</a></li>
+      <li><a href="/#team">Subsystems</a></li>
+      <li><a href="join.html" class="active">Join Us</a></li>
+    </ul>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="page">
+
+    <!-- Header -->
+    <div class="page-header">
+      <div class="page-eyebrow">
+        <div class="page-eyebrow-line"></div>
+        <span class="page-eyebrow-text">Now Recruiting · Spring 2026</span>
+      </div>
+      <h1 class="page-title">Open Positions</h1>
+      <p class="page-subtitle">
+        Join SJSU's first student-led CubeSat mission. All majors and experience levels welcome —
+        no prior space experience required.
+      </p>
+    </div>
+
+    <!-- Layout -->
+    <div class="listings-layout">
+
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="sidebar-title">// Filter</div>
+
+        <div class="filter-group">
+          <div class="filter-group-label">Subsystem</div>
+          <span class="filter-chip active" data-filter="subsystem" data-value="all">
+            <span class="chip-dot"></span> All
+          </span>
+          <span class="filter-chip" data-filter="subsystem" data-value="Spacecraft">
+            <span class="chip-dot"></span> Spacecraft
+          </span>
+          <span class="filter-chip" data-filter="subsystem" data-value="Launch Vehicle Support">
+            <span class="chip-dot"></span> Launch
+          </span>
+        </div>
+
+        <div class="filter-group">
+          <div class="filter-group-label">Role Type</div>
+          <span class="filter-chip active" data-filter="type" data-value="all">
+            <span class="chip-dot"></span> All
+          </span>
+          <span class="filter-chip" data-filter="type" data-value="Lead">
+            <span class="chip-dot"></span> Lead
+          </span>
+          <span class="filter-chip" data-filter="type" data-value="Member">
+            <span class="chip-dot"></span> Member
+          </span>
+        </div>
+
+        <div class="results-count">
+          Showing <span id="count-display">4</span> of 4 positions
+        </div>
+      </aside>
+
+      <!-- Listings -->
+      <div class="listings-panel">
+        <div class="listings-toolbar">
+          <span class="toolbar-count"><strong id="toolbar-count">4</strong> open positions</span>
+          <span class="toolbar-sort">Sorted by subsystem</span>
+        </div>
+
+        <div id="job-list">
+
+          <!-- ── AVIONICS MEMBER ── -->
+          <article class="job-card"
+            data-subsystem="Spacecraft"
+            data-type="Member"
+            data-wbs="WBS 3.0">
+            <div class="job-card-left">
+              <div class="job-card-top">
+                <span class="job-subsystem">Spacecraft</span>
+                <span class="job-divider"></span>
+                <span class="job-wbs">WBS 3.0</span>
+              </div>
+              <div class="job-title">Avionics Member</div>
+              <div class="job-meta">
+                <span class="job-meta-item">
+                  <!-- location icon -->
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <circle cx="8" cy="7" r="3"/><path d="M8 2C5.24 2 3 4.24 3 7c0 4 5 9 5 9s5-5 5-9c0-2.76-2.24-5-5-5z"/>
+                  </svg>
+                  San Jose, CA
+                </span>
+                <span class="job-meta-item">
+                  <!-- clock icon -->
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/>
+                  </svg>
+                  Part-time · Student
+                </span>
+                <span class="job-meta-item">
+                  <!-- team icon -->
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <circle cx="6" cy="5" r="2"/><path d="M2 13c0-2.21 1.79-4 4-4s4 1.79 4 4"/>
+                    <circle cx="11" cy="5" r="2"/><path d="M14 13c0-2.21-1.79-4-4-4"/>
+                  </svg>
+                  1 opening
+                </span>
+              </div>
+              <p class="job-desc">
+                Support avionics design, integration, and testing on SpartanSat's flight hardware.
+                Work alongside the Spacecraft lead on on-board computing, wiring harnesses, and sensor interfaces.
+                Experience with embedded systems or PCB design a plus — but not required.
+              </p>
+              <div class="job-tags">
+                <span class="job-tag">Embedded Systems</span>
+                <span class="job-tag">PCB</span>
+                <span class="job-tag">C / C++</span>
+                <span class="job-tag">Hardware</span>
+              </div>
+            </div>
+            <div class="job-card-right">
+              <span class="job-badge open"><span class="badge-dot"></span> Open</span>
+              <a href="https://sjsu.edu" target="_blank" rel="noopener" class="btn-apply">Apply →</a>
+              <span class="job-posted">Posted Mar 2026</span>
+            </div>
+          </article>
+
+          <!-- ── THERMAL MEMBER ── -->
+          <article class="job-card"
+            data-subsystem="Spacecraft"
+            data-type="Member"
+            data-wbs="WBS 3.0">
+            <div class="job-card-left">
+              <div class="job-card-top">
+                <span class="job-subsystem">Spacecraft</span>
+                <span class="job-divider"></span>
+                <span class="job-wbs">WBS 3.0</span>
+              </div>
+              <div class="job-title">Thermal Member</div>
+              <div class="job-meta">
+                <span class="job-meta-item">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <circle cx="8" cy="7" r="3"/><path d="M8 2C5.24 2 3 4.24 3 7c0 4 5 9 5 9s5-5 5-9c0-2.76-2.24-5-5-5z"/>
+                  </svg>
+                  San Jose, CA
+                </span>
+                <span class="job-meta-item">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/>
+                  </svg>
+                  Part-time · Student
+                </span>
+                <span class="job-meta-item">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <circle cx="6" cy="5" r="2"/><path d="M2 13c0-2.21 1.79-4 4-4s4 1.79 4 4"/>
+                    <circle cx="11" cy="5" r="2"/><path d="M14 13c0-2.21-1.79-4-4-4"/>
+                  </svg>
+                  1 opening
+                </span>
+              </div>
+              <p class="job-desc">
+                Perform thermal analysis and develop thermal control strategies for SpartanSat's LEO environment.
+                Tasks include thermal modelling, passive control design (coatings, MLI), and analysis using tools like
+                Thermal Desktop or MATLAB. Aerospace or ME background helpful.
+              </p>
+              <div class="job-tags">
+                <span class="job-tag">Thermal Analysis</span>
+                <span class="job-tag">MATLAB</span>
+                <span class="job-tag">Thermal Desktop</span>
+                <span class="job-tag">Aerospace / ME</span>
+              </div>
+            </div>
+            <div class="job-card-right">
+              <span class="job-badge open"><span class="badge-dot"></span> Open</span>
+              <a href="https://sjsu.edu" target="_blank" rel="noopener" class="btn-apply">Apply →</a>
+              <span class="job-posted">Posted Mar 2026</span>
+            </div>
+          </article>
+
+          <!-- ── GNC LEAD ── -->
+          <article class="job-card"
+            data-subsystem="Spacecraft"
+            data-type="Lead"
+            data-wbs="WBS 3.0">
+            <div class="job-card-left">
+              <div class="job-card-top">
+                <span class="job-subsystem">Spacecraft</span>
+                <span class="job-divider"></span>
+                <span class="job-wbs">WBS 3.0</span>
+              </div>
+              <div class="job-title">GNC Lead</div>
+              <div class="job-meta">
+                <span class="job-meta-item">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <circle cx="8" cy="7" r="3"/><path d="M8 2C5.24 2 3 4.24 3 7c0 4 5 9 5 9s5-5 5-9c0-2.76-2.24-5-5-5z"/>
+                  </svg>
+                  San Jose, CA
+                </span>
+                <span class="job-meta-item">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/>
+                  </svg>
+                  Part-time · Student
+                </span>
+                <span class="job-meta-item">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <circle cx="6" cy="5" r="2"/><path d="M2 13c0-2.21 1.79-4 4-4s4 1.79 4 4"/>
+                    <circle cx="11" cy="5" r="2"/><path d="M14 13c0-2.21-1.79-4-4-4"/>
+                  </svg>
+                  1 opening
+                </span>
+              </div>
+              <p class="job-desc">
+                Own SpartanSat's Guidance, Navigation &amp; Control subsystem end-to-end. Lead attitude determination
+                and control design (ADCS), orbital mechanics analysis, and simulation development.
+                This is a leadership role — you'll drive technical decisions and coordinate with Systems Engineering.
+                Strong background in dynamics, controls, or orbital mechanics expected.
+              </p>
+              <div class="job-tags">
+                <span class="job-tag">ADCS</span>
+                <span class="job-tag">Orbital Mechanics</span>
+                <span class="job-tag">MATLAB / Simulink</span>
+                <span class="job-tag">Leadership</span>
+                <span class="job-tag">Controls</span>
+              </div>
+            </div>
+            <div class="job-card-right">
+              <span class="job-badge lead"><span class="badge-dot"></span> Lead</span>
+              <a href="https://sjsu.edu" target="_blank" rel="noopener" class="btn-apply">Apply →</a>
+              <span class="job-posted">Posted Mar 2026</span>
+            </div>
+          </article>
+
+          <!-- ── LAUNCH VEHICLE SUPPORT MEMBER ── -->
+          <article class="job-card"
+            data-subsystem="Launch Vehicle Support"
+            data-type="Member"
+            data-wbs="WBS 8.0">
+            <div class="job-card-left">
+              <div class="job-card-top">
+                <span class="job-subsystem">Launch Vehicle Support</span>
+                <span class="job-divider"></span>
+                <span class="job-wbs">WBS 8.0</span>
+              </div>
+              <div class="job-title">Launch Vehicle Support Member</div>
+              <div class="job-meta">
+                <span class="job-meta-item">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <circle cx="8" cy="7" r="3"/><path d="M8 2C5.24 2 3 4.24 3 7c0 4 5 9 5 9s5-5 5-9c0-2.76-2.24-5-5-5z"/>
+                  </svg>
+                  San Jose, CA
+                </span>
+                <span class="job-meta-item">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/>
+                  </svg>
+                  Part-time · Student
+                </span>
+                <span class="job-meta-item">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <circle cx="6" cy="5" r="2"/><path d="M2 13c0-2.21 1.79-4 4-4s4 1.79 4 4"/>
+                    <circle cx="11" cy="5" r="2"/><path d="M14 13c0-2.21-1.79-4-4-4"/>
+                  </svg>
+                  1 opening
+                </span>
+              </div>
+              <p class="job-desc">
+                Research and coordinate launch vehicle options for SpartanSat's LEO deployment. Responsibilities include
+                evaluating rideshare providers (e.g. SpaceX, RocketLab, NanoRacks), tracking launch timelines,
+                and preparing interface documentation. Strong research and communication skills valued.
+              </p>
+              <div class="job-tags">
+                <span class="job-tag">Launch Integration</span>
+                <span class="job-tag">Rideshare</span>
+                <span class="job-tag">Documentation</span>
+                <span class="job-tag">Research</span>
+              </div>
+            </div>
+            <div class="job-card-right">
+              <span class="job-badge open"><span class="badge-dot"></span> Open</span>
+              <a href="https://sjsu.edu" target="_blank" rel="noopener" class="btn-apply">Apply →</a>
+              <span class="job-posted">Posted Mar 2026</span>
+            </div>
+          </article>
+
+        </div><!-- #job-list -->
+
+        <div class="no-results" id="no-results">
+          <div class="no-results-icon">[ 0 ]</div>
+          <p>No positions match the current filters.</p>
+        </div>
+
+      </div><!-- .listings-panel -->
+    </div><!-- .listings-layout -->
+  </main>
+
+  <footer>
+    <div class="footer-left">SPARTAN<span>Sat</span> · SJSU</div>
+    <div class="footer-center">
+      AD ASTRA · TO THE STARS<br>
+      <span style="opacity:0.5;">Operating under NASA NPR 7123.1C &amp; 7120.8A</span>
+    </div>
+    <div class="footer-right">San Jose State University</div>
+  </footer>
+
+  <script>
+    // ── CUSTOM CURSOR ──
+    const cursor = document.getElementById('cursor');
+    const cursorRing = document.getElementById('cursor-ring');
+    let mx = -100, my = -100, rx = -100, ry = -100;
+
+    document.addEventListener('mousemove', e => {
+      mx = e.clientX; my = e.clientY;
+      cursor.style.left = mx + 'px';
+      cursor.style.top  = my + 'px';
+    });
+
+    (function animateCursorRing() {
+      rx += (mx - rx) * 0.12;
+      ry += (my - ry) * 0.12;
+      cursorRing.style.left = rx + 'px';
+      cursorRing.style.top  = ry + 'px';
+      requestAnimationFrame(animateCursorRing);
+    })();
+
+    // ── STARFIELD ──
+    const canvas = document.getElementById('starfield');
+    const ctx = canvas.getContext('2d');
+    let stars = [];
+
+    function resizeCanvas() {
+      canvas.width  = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+
+    function initStars() {
+      stars = [];
+      for (let i = 0; i < 180; i++) {
+        stars.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          r: Math.random() * 1.2,
+          o: Math.random() * 0.6 + 0.1,
+          speed: Math.random() * 0.015 + 0.003,
+          phase: Math.random() * Math.PI * 2
+        });
+      }
+    }
+
+    let frame = 0;
+    function tick() {
+      frame++;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      stars.forEach(s => {
+        const opacity = s.o * (0.6 + 0.4 * Math.sin(frame * s.speed + s.phase));
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(220,230,255,${opacity})`;
+        ctx.fill();
+      });
+      requestAnimationFrame(tick);
+    }
+
+    window.addEventListener('resize', () => { resizeCanvas(); initStars(); });
+    resizeCanvas();
+    initStars();
+    tick();
+
+    // ── FILTER LOGIC ──
+    const cards      = Array.from(document.querySelectorAll('.job-card'));
+    const noResults  = document.getElementById('no-results');
+    const countEl    = document.getElementById('count-display');
+    const tbCountEl  = document.getElementById('toolbar-count');
+
+    // Track active filters
+    const activeFilters = { subsystem: 'all', type: 'all' };
+
+    function applyFilters() {
+      let visible = 0;
+      cards.forEach(card => {
+        const subsystemMatch = activeFilters.subsystem === 'all' || card.dataset.subsystem === activeFilters.subsystem;
+        const typeMatch      = activeFilters.type      === 'all' || card.dataset.type      === activeFilters.type;
+        const show = subsystemMatch && typeMatch;
+        card.style.display = show ? '' : 'none';
+        if (show) visible++;
+      });
+
+      countEl.textContent   = visible;
+      tbCountEl.textContent = visible;
+      noResults.classList.toggle('visible', visible === 0);
+    }
+
+    document.querySelectorAll('.filter-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        const filterKey = chip.dataset.filter;
+        const value     = chip.dataset.value;
+
+        // Deactivate siblings in same filter group
+        document.querySelectorAll(`.filter-chip[data-filter="${filterKey}"]`).forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+
+        activeFilters[filterKey] = value;
+        applyFilters();
+      });
+    });
+
+    // ── CARD CLICK — highlight selected ──
+    cards.forEach(card => {
+      card.addEventListener('click', e => {
+        // Don't intercept clicks on the Apply button itself
+        if (e.target.closest('.btn-apply')) return;
+        cards.forEach(c => c.classList.remove('selected'));
+        card.classList.add('selected');
+      });
+    });
+
+  </script>
+</body>
+</html>

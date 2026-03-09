@@ -1,0 +1,1936 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>SpartanSat — Ad Astra · SJSU</title>
+<meta name="description" content="SpartanSat — SJSU's first student-led CubeSat mission. A 2U/3U spacecraft carrying a lunar AI imaging pipeline and radiation shielding experiment, built by Spartans." />
+<meta property="og:title" content="SpartanSat — Ad Astra · SJSU" />
+<meta property="og:description" content="SJSU's first student-led, independently initiated satellite mission. Built by Spartans, for the future of space." />
+<meta property="og:type" content="website" /><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@300;400;500;600&family=Share+Tech+Mono&display=swap" rel="stylesheet"> <style>
+    :root {
+      --gold: #E5A823;
+      --gold-dim: #b8841a;
+      --gold-glow: rgba(229,168,35,0.18);
+      --navy: #050d1a;
+      --navy-mid: #0a1628;
+      --navy-light: #0f2040;
+      --slate: #1a2d4a;
+      --white: #f0f4ff;
+      --white-dim: rgba(240,244,255,0.6);
+      --white-faint: rgba(240,244,255,0.12);
+      --teal: #4db8c8;
+      --red-accent: #c0392b;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--navy);
+      color: var(--white);
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 400;
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* ── CUSTOM CURSOR ── */
+    #cursor {
+      position: fixed;
+      width: 12px; height: 12px;
+      border-radius: 50%;
+      background: var(--gold);
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: transform 0.1s, background 0.2s, box-shadow 0.2s;
+      box-shadow: 0 0 8px rgba(229,168,35,0.6);
+    }
+
+    #cursor-ring {
+      position: fixed;
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      border: 1px solid rgba(229,168,35,0.5);
+      pointer-events: none;
+      z-index: 9998;
+      transform: translate(-50%, -50%);
+      transition: transform 0.18s ease, width 0.2s, height 0.2s, border-color 0.2s;
+    }
+
+    body:has(a:hover) #cursor,
+    body:has(button:hover) #cursor { background: #fff; box-shadow: 0 0 16px var(--gold), 0 0 32px rgba(229,168,35,0.4); transform: translate(-50%,-50%) scale(1.5); }
+    body:has(a:hover) #cursor-ring,
+    body:has(button:hover) #cursor-ring { width: 52px; height: 52px; border-color: var(--gold); }
+
+    /* ── STARFIELD ── */
+    #starfield {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* ── DRONE CANVAS ── */
+    #drone-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 3rem;
+      height: 70px;
+      background: rgba(5,13,26,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(229,168,35,0.2);
+      transition: border-color 0.3s;
+    }
+
+    nav:hover { border-bottom-color: rgba(229,168,35,0.5); }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+    }
+
+    .nav-logo-badge {
+      width: 38px; height: 38px;
+      border: 2px solid var(--gold);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.6rem;
+      font-weight: 700;
+      color: var(--gold);
+      letter-spacing: 0.05em;
+      line-height: 1.2;
+      text-align: center;
+      transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+    }
+
+    .nav-logo:hover .nav-logo-badge {
+      background: var(--gold);
+      color: var(--navy);
+      box-shadow: 0 0 16px rgba(229,168,35,0.5);
+    }
+
+    .nav-logo-text {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--white);
+      letter-spacing: 0.12em;
+    }
+
+    .nav-logo-text span { color: var(--gold); }
+
+    .nav-links {
+      display: flex;
+      gap: 2.5rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 600;
+      font-size: 0.85rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--white-dim);
+      transition: color 0.2s, text-shadow 0.2s;
+      position: relative;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -4px; left: 0; right: 0;
+      height: 1px;
+      background: var(--gold);
+      transform: scaleX(0);
+      transition: transform 0.25s;
+    }
+
+    .nav-links a:hover {
+      color: var(--gold);
+      text-shadow: 0 0 12px rgba(229,168,35,0.5);
+    }
+    .nav-links a:hover::after { transform: scaleX(1); }
+
+    .nav-cta {
+      padding: 0.45rem 1.2rem;
+      border: 1px solid var(--gold);
+      color: var(--gold) !important;
+      border-radius: 3px;
+      transition: background 0.2s, color 0.2s, box-shadow 0.2s !important;
+    }
+    .nav-cta:hover {
+      background: var(--gold) !important;
+      color: var(--navy) !important;
+      box-shadow: 0 0 20px rgba(229,168,35,0.4) !important;
+    }
+    .nav-cta::after { display: none !important; }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative;
+      z-index: 2;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 100px 3rem 4rem;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 60% 70% at 70% 50%, rgba(77,184,200,0.06) 0%, transparent 70%),
+                  radial-gradient(ellipse 40% 60% at 20% 80%, rgba(229,168,35,0.05) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .hero-grid-overlay {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(229,168,35,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(229,168,35,0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+    }
+
+    .hero-content {
+      max-width: 680px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero-eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      margin-bottom: 1.5rem;
+      opacity: 0;
+      animation: fadeUp 0.8s ease 0.3s forwards;
+    }
+
+    .hero-eyebrow-line {
+      width: 40px; height: 1px;
+      background: var(--gold);
+    }
+
+    .hero-eyebrow-text {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.25em;
+      color: var(--gold);
+      text-transform: uppercase;
+    }
+
+    .hero-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(2.8rem, 6vw, 5rem);
+      font-weight: 900;
+      line-height: 1.05;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.4rem;
+      opacity: 0;
+      animation: fadeUp 0.8s ease 0.5s forwards;
+      transition: text-shadow 0.3s;
+    }
+
+    .hero-title:hover {
+      text-shadow: 0 0 40px rgba(229,168,35,0.3), 0 0 80px rgba(229,168,35,0.1);
+    }
+
+    .hero-title-sub {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(1.1rem, 2.5vw, 1.8rem);
+      font-weight: 400;
+      color: var(--gold);
+      letter-spacing: 0.18em;
+      margin-bottom: 2rem;
+      opacity: 0;
+      animation: fadeUp 0.8s ease 0.65s forwards;
+    }
+
+    .hero-description {
+      font-size: 1.15rem;
+      font-weight: 400;
+      line-height: 1.7;
+      color: var(--white-dim);
+      max-width: 560px;
+      margin-bottom: 2.5rem;
+      opacity: 0;
+      animation: fadeUp 0.8s ease 0.8s forwards;
+    }
+
+    .hero-description strong {
+      color: var(--white);
+      font-weight: 600;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      opacity: 0;
+      animation: fadeUp 0.8s ease 0.95s forwards;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.8rem 2rem;
+      background: var(--gold);
+      color: var(--navy);
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      text-decoration: none;
+      border: none;
+      cursor: none;
+      clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+    }
+
+    .btn-primary:hover {
+      background: #f0c040;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(229,168,35,0.35), 0 0 40px rgba(229,168,35,0.15);
+    }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.8rem 2rem;
+      background: transparent;
+      color: var(--white-dim);
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      text-decoration: none;
+      border: 1px solid rgba(240,244,255,0.25);
+      cursor: none;
+      clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+      transition: border-color 0.2s, color 0.2s, box-shadow 0.2s;
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--gold);
+      color: var(--gold);
+      box-shadow: 0 0 20px rgba(229,168,35,0.1);
+    }
+
+    /* Hero orbital visual — canvas scene */
+    .hero-visual {
+      position: absolute;
+      right: -60px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 560px; height: 560px;
+      pointer-events: none;
+      opacity: 0;
+      animation: fadeIn 1.2s ease 0.8s forwards;
+    }
+
+    #scene-canvas {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* ── STATS STRIP ── */
+    .stats-strip {
+      position: relative;
+      z-index: 2;
+      border-top: 1px solid rgba(229,168,35,0.15);
+      border-bottom: 1px solid rgba(229,168,35,0.15);
+      background: rgba(10,22,40,0.6);
+      backdrop-filter: blur(8px);
+      padding: 2rem 3rem;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+    }
+
+    .stat-item {
+      text-align: center;
+      padding: 0.5rem 1rem;
+      border-right: 1px solid rgba(229,168,35,0.1);
+      transition: background 0.25s;
+      position: relative;
+    }
+
+    .stat-item:last-child { border-right: none; }
+
+    .stat-item:hover {
+      background: rgba(229,168,35,0.05);
+    }
+
+    .stat-value {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--gold);
+      display: block;
+      transition: text-shadow 0.25s;
+    }
+
+    .stat-item:hover .stat-value {
+      text-shadow: 0 0 20px rgba(229,168,35,0.6);
+    }
+
+    .stat-label {
+      font-size: 0.78rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--white-dim);
+      margin-top: 0.25rem;
+    }
+
+    /* ── SECTIONS ── */
+    .section {
+      position: relative;
+      z-index: 2;
+      padding: 6rem 3rem;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 3.5rem;
+    }
+
+    .section-number {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--gold);
+      letter-spacing: 0.2em;
+      opacity: 0.7;
+    }
+
+    .section-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(1.5rem, 3vw, 2.2rem);
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+
+    .section-line {
+      flex: 1; height: 1px;
+      background: linear-gradient(90deg, rgba(229,168,35,0.4), transparent);
+    }
+
+    .mission-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: start;
+    }
+
+    .mission-text p {
+      font-size: 1.05rem;
+      line-height: 1.8;
+      color: var(--white-dim);
+      margin-bottom: 1.25rem;
+    }
+
+    .mission-text p strong { color: var(--gold); font-weight: 600; }
+
+    .mission-text .acronym-reveal {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.82rem;
+      color: var(--teal);
+      letter-spacing: 0.08em;
+      margin-top: 1.5rem;
+      padding: 1rem 1.25rem;
+      border-left: 2px solid var(--teal);
+      background: rgba(77,184,200,0.05);
+      transition: background 0.25s, box-shadow 0.25s;
+    }
+
+    .mission-text .acronym-reveal:hover {
+      background: rgba(77,184,200,0.1);
+      box-shadow: inset 3px 0 0 var(--teal), 0 0 20px rgba(77,184,200,0.08);
+    }
+
+    .payload-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .payload-card {
+      padding: 1.5rem;
+      border: 1px solid rgba(229,168,35,0.15);
+      background: rgba(15,32,64,0.5);
+      position: relative;
+      clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+      transition: border-color 0.25s, background 0.25s, box-shadow 0.25s, transform 0.2s;
+    }
+
+    .payload-card:hover {
+      border-color: rgba(229,168,35,0.5);
+      background: rgba(15,32,64,0.9);
+      box-shadow: 0 0 30px rgba(229,168,35,0.08), inset 0 0 30px rgba(229,168,35,0.03);
+      transform: translateY(-2px);
+    }
+
+    .payload-card:nth-child(2):hover {
+      border-color: rgba(77,184,200,0.5);
+      box-shadow: 0 0 30px rgba(77,184,200,0.08), inset 0 0 30px rgba(77,184,200,0.03);
+    }
+
+    .payload-card-tag {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+
+    .payload-card-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 0.6rem;
+    }
+
+    .payload-card-desc {
+      font-size: 0.9rem;
+      line-height: 1.6;
+      color: var(--white-dim);
+    }
+
+    .payload-card-accent {
+      position: absolute;
+      top: 0; left: 0;
+      width: 3px; height: 100%;
+      background: var(--gold);
+      transition: box-shadow 0.25s;
+    }
+
+    .payload-card:hover .payload-card-accent {
+      box-shadow: 0 0 12px var(--gold);
+    }
+
+    .payload-card:nth-child(2) .payload-card-accent { background: var(--teal); }
+    .payload-card:nth-child(2) .payload-card-tag { color: var(--teal); }
+    .payload-card:nth-child(2):hover .payload-card-accent {
+      box-shadow: 0 0 12px var(--teal);
+    }
+
+    /* ── SUBSYSTEMS ── */
+    .subsystems-section { background: rgba(10,22,40,0.4); }
+
+    .subsystems-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 1px;
+      border: 1px solid rgba(229,168,35,0.1);
+    }
+
+    .subsystem-cell {
+      padding: 1.5rem;
+      background: rgba(5,13,26,0.6);
+      border: 1px solid rgba(229,168,35,0.08);
+      transition: background 0.25s, box-shadow 0.25s, transform 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .subsystem-cell:hover {
+      background: rgba(15,32,64,0.9);
+      box-shadow: inset 0 0 24px rgba(229,168,35,0.04);
+      transform: translateY(-1px);
+      z-index: 2;
+    }
+
+    .subsystem-cell::before {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 2px;
+      background: var(--gold);
+      transform: scaleX(0);
+      transition: transform 0.3s;
+      transform-origin: left;
+      box-shadow: 0 0 8px var(--gold);
+    }
+
+    .subsystem-cell:hover::before { transform: scaleX(1); }
+
+    /* Pulsing glow on hover */
+    .subsystem-cell::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 100%, rgba(229,168,35,0.06) 0%, transparent 70%);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .subsystem-cell:hover::after { opacity: 1; }
+
+    .subsystem-number {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.65rem;
+      color: rgba(229,168,35,0.4);
+      margin-bottom: 0.5rem;
+      transition: color 0.25s;
+    }
+
+    .subsystem-cell:hover .subsystem-number { color: rgba(229,168,35,0.8); }
+
+    .subsystem-name {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      margin-bottom: 0.5rem;
+      color: var(--white);
+      transition: color 0.25s, text-shadow 0.25s;
+    }
+
+    .subsystem-cell:hover .subsystem-name {
+      color: var(--gold);
+      text-shadow: 0 0 10px rgba(229,168,35,0.3);
+    }
+
+    .subsystem-lead {
+      font-size: 0.78rem;
+      color: var(--gold);
+      font-weight: 500;
+    }
+
+    .subsystem-desc {
+      font-size: 0.78rem;
+      color: var(--white-dim);
+      line-height: 1.5;
+      margin-top: 0.4rem;
+    }
+
+    /* ── JOIN CTA ── */
+    .join-cta {
+      text-align: center;
+      padding: 7rem 3rem;
+      position: relative;
+      overflow: hidden;
+      z-index: 2;
+    }
+
+    .join-cta::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(229,168,35,0.06) 0%, transparent 70%);
+    }
+
+    .join-cta-eyebrow {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.3em;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+
+    /* Pulsing dot indicator */
+    .pulse-dot {
+      display: inline-block;
+      width: 8px; height: 8px;
+      background: var(--gold);
+      border-radius: 50%;
+      margin-right: 0.5rem;
+      animation: pulse-glow 2s ease-in-out infinite;
+      vertical-align: middle;
+    }
+
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 4px var(--gold); opacity: 1; }
+      50% { box-shadow: 0 0 16px var(--gold), 0 0 30px rgba(229,168,35,0.4); opacity: 0.7; }
+    }
+
+    .join-cta-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(2rem, 4vw, 3.5rem);
+      font-weight: 900;
+      line-height: 1.1;
+      margin-bottom: 1.25rem;
+      transition: text-shadow 0.3s;
+    }
+
+    .join-cta-title:hover {
+      text-shadow: 0 0 40px rgba(229,168,35,0.2);
+    }
+
+    .join-cta-sub {
+      font-size: 1.1rem;
+      color: var(--white-dim);
+      max-width: 500px;
+      margin: 0 auto 2.5rem;
+      line-height: 1.6;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      position: relative;
+      z-index: 2;
+      border-top: 1px solid rgba(229,168,35,0.15);
+      padding: 2.5rem 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(5,13,26,0.9);
+    }
+
+    .footer-left {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--white-dim);
+      letter-spacing: 0.12em;
+      transition: color 0.2s;
+    }
+
+    .footer-left:hover { color: var(--white); }
+    .footer-left span { color: var(--gold); }
+
+    .footer-center {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.65rem;
+      color: rgba(240,244,255,0.25);
+      letter-spacing: 0.12em;
+      text-align: center;
+    }
+
+    .footer-right {
+      font-size: 0.78rem;
+      color: rgba(240,244,255,0.3);
+      letter-spacing: 0.05em;
+    }
+
+    /* ── ARES EASTER EGG BUTTON ── */
+    #ares-btn {
+      position: fixed;
+      bottom: 12px;
+      right: 16px;
+      z-index: 200;
+      background: none;
+      border: none;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.18em;
+      color: rgba(229,168,35,0.08);
+      cursor: none;
+      padding: 4px 6px;
+      transition: color 0.4s;
+      user-select: none;
+    }
+    #ares-btn:hover { color: rgba(229,168,35,0.22); }
+    #ares-btn.active { color: rgba(229,168,35,0.12); }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    @keyframes orbit {
+      from { transform: rotate(0deg) translateX(200px) rotate(0deg); }
+      to   { transform: rotate(360deg) translateX(200px) rotate(-360deg); }
+    }
+
+    @keyframes orbitReverse {
+      from { transform: rotate(0deg) translateX(150px) rotate(0deg); }
+      to   { transform: rotate(-360deg) translateX(150px) rotate(360deg); }
+    }
+
+
+
+    /* scroll reveal */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible { opacity: 1; transform: none; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      nav { padding: 0 1.5rem; }
+      .nav-links { display: none; }
+      .hero { padding: 100px 1.5rem 4rem; }
+      .hero-visual { display: none; }
+      .stats-strip { grid-template-columns: repeat(2, 1fr); }
+      .mission-grid { grid-template-columns: 1fr; gap: 2rem; }
+      .section { padding: 4rem 1.5rem; }
+      footer { flex-direction: column; gap: 1rem; text-align: center; }
+      body { cursor: auto; }
+      #cursor, #cursor-ring { display: none; }
+    }
+  </style> </head><body><div id="cursor"></div><div id="cursor-ring"></div><canvas id="starfield"></canvas><canvas id="drone-canvas"></canvas><nav><a class="nav-logo" href="/"><div class="nav-logo-badge">SS<br>SJSU</div><span class="nav-logo-text">SPARTAN<span>Sat</span></span></a><ul class="nav-links"><li><a href="#mission">Mission</a></li><li><a href="#payloads">Payloads</a></li><li><a href="#team">Subsystems</a></li><li><a href="join.html" class="nav-cta">Join Us</a></li></ul></nav><section class="hero"><div class="hero-grid-overlay"></div><div class="hero-content"><div class="hero-eyebrow"><div class="hero-eyebrow-line"></div><span class="hero-eyebrow-text">San Jose State University · LEO CubeSat Mission</span></div><h1 class="hero-title">SPARTAN<br>SAT</h1><p class="hero-title-sub">Ad Astra — To the Stars</p><p class="hero-description"> SJSU's first <strong>student-led, independently initiated</strong> satellite mission. A 2U/3U CubeSat carrying a lunar AI imaging pipeline and a radiation shielding materials experiment — built by Spartans, for the future of space. </p><div class="hero-actions"><a href="#mission" class="btn-primary"><span>↓</span> Our Mission </a><a href="join.html" class="btn-secondary"><span>→</span> Join the Team </a></div></div><div class="hero-visual"><canvas id="scene-canvas"></canvas></div></section><div class="stats-strip reveal"><div class="stat-item"><span class="stat-value">2U/3U</span><span class="stat-label">CubeSat Form Factor</span></div><div class="stat-item"><span class="stat-value">2</span><span class="stat-label">Science Payloads</span></div><div class="stat-item"><span class="stat-value">40+</span><span class="stat-label">Team Members</span></div><div class="stat-item"><span class="stat-value">LEO</span><span class="stat-label">Target Orbit</span></div></div><section class="section" id="mission"><div class="section-header reveal"><span class="section-number">01 //</span><h2 class="section-title">Mission</h2><div class="section-line"></div></div><div class="mission-grid"><div class="mission-text reveal"><p> SpartanSat is <strong>SJSU's first student-led, independently initiated CubeSat mission</strong> — a platform for hands-on education in spacecraft engineering, mission operations, and cutting-edge space technologies. </p><p> Operating under NASA NPR 7123.1C and 7120.8A standards, our team designs, builds, tests, and certifies real spaceflight hardware from the ground up. No shortcuts. No simulations as substitutes. </p><p> Our mission bridges the gap between academic learning and industry-ready aerospace experience, producing engineers and scientists prepared for the next era of space exploration. </p><div class="acronym-reveal"> S · P · A · R · T · A · N — S · A · T<br><span style="color: var(--white-dim);">SJSU Project for Advanced Research, Technology, and Aerospace educatioN</span></div></div><div class="payload-cards reveal" id="payloads"><div class="payload-card"><div class="payload-card-accent"></div><div class="payload-card-tag">Payload 01 · AI Imaging</div><div class="payload-card-title">Lunar AI Navigation Pipeline</div><p class="payload-card-desc"> Running on a NVIDIA Jetson Orin Nano, this payload develops AI-based software to identify the crescent moon for cislunar positioning. Two-minute stereo video capture with onboard compression and downlink. </p></div><div class="payload-card"><div class="payload-card-accent"></div><div class="payload-card-tag">Payload 02 · Materials Science</div><div class="payload-card-title">Radiation Shielding Experiment</div><p class="payload-card-desc"> Evaluating Al 6061-T651, fused silica, UHMW-PE, and HD-PE under real LEO radiation conditions using BG-51 sensors and MOSFETs. Directly advancing material science for future deep-space missions. </p></div></div></div></section><section class="section subsystems-section" id="team"><div class="section-header reveal"><span class="section-number">02 //</span><h2 class="section-title">Subsystems</h2><div class="section-line"></div></div><div class="subsystems-grid reveal"><div class="subsystem-cell"><div class="subsystem-number">WBS 1.0</div><div class="subsystem-name">Project Management</div><div class="subsystem-lead">Jose Jaime Esquivel Patricio</div><div class="subsystem-desc">Overall coordination, milestone tracking, budget & configuration management.</div></div><div class="subsystem-cell"><div class="subsystem-number">WBS 2.0</div><div class="subsystem-name">Systems Engineering</div><div class="subsystem-lead">Dan Orteza</div><div class="subsystem-desc">Requirements, risk management, configuration control & systems verification.</div></div><div class="subsystem-cell"><div class="subsystem-number">WBS 3.0</div><div class="subsystem-name">Spacecraft</div><div class="subsystem-lead">[Lead TBD]</div><div class="subsystem-desc">Mechanical, electrical, avionics, GNC, comms, power & thermal subsystems.</div></div><div class="subsystem-cell"><div class="subsystem-number">WBS 4.0</div><div class="subsystem-name">Technology / Payloads</div><div class="subsystem-lead">Vignesh S.</div><div class="subsystem-desc">VR payload, AI data compression, SDR radio & materials research.</div></div><div class="subsystem-cell"><div class="subsystem-number">WBS 5.0</div><div class="subsystem-name">Integration & Testing</div><div class="subsystem-lead">Kaitlyn Lee</div><div class="subsystem-desc">System integration, environmental testing & software/hardware validation.</div></div><div class="subsystem-cell"><div class="subsystem-number">WBS 6.0</div><div class="subsystem-name">Mission Operations</div><div class="subsystem-lead">Recruiting</div><div class="subsystem-desc">Mission scenarios, flight simulation, timelines & documentation.</div></div><div class="subsystem-cell"><div class="subsystem-number">WBS 7.0</div><div class="subsystem-name">Safety & Mission Assurance</div><div class="subsystem-lead">Genevieve Sink</div><div class="subsystem-desc">Safety analysis, quality systems & mission compliance assurance.</div></div><div class="subsystem-cell"><div class="subsystem-number">WBS 8.0</div><div class="subsystem-name">Launch Vehicle Support</div><div class="subsystem-lead">Brandon Chew</div><div class="subsystem-desc">Launch partner research, timeline estimation & vehicle coordination.</div></div><div class="subsystem-cell"><div class="subsystem-number">WBS 9.0</div><div class="subsystem-name">Art & Public Outreach</div><div class="subsystem-lead">Quin Ngo & Yusuf Yanik</div><div class="subsystem-desc">Brand identity, marketing, social media & community outreach.</div></div></div></section><footer><div class="footer-left">SPARTAN<span>Sat</span> · SJSU</div><div class="footer-center"> AD ASTRA · TO THE STARS<br><span style="opacity:0.5;">Operating under NASA NPR 7123.1C & 7120.8A</span></div><div class="footer-right">San Jose State University</div></footer><button id="ares-btn" title="">ARES</button> <script>
+    // ── CUSTOM CURSOR ──
+    const cursor = document.getElementById('cursor');
+    const cursorRing = document.getElementById('cursor-ring');
+    let mx = -100, my = -100, rx = -100, ry = -100;
+
+    document.addEventListener('mousemove', e => {
+      mx = e.clientX; my = e.clientY;
+      cursor.style.left = mx + 'px';
+      cursor.style.top = my + 'px';
+    });
+
+    // Ring follows with lag
+    function animateCursorRing() {
+      rx += (mx - rx) * 0.12;
+      ry += (my - ry) * 0.12;
+      cursorRing.style.left = rx + 'px';
+      cursorRing.style.top = ry + 'px';
+      requestAnimationFrame(animateCursorRing);
+    }
+    animateCursorRing();
+
+    // ── STARFIELD ──
+    const canvas = document.getElementById('starfield');
+    const ctx = canvas.getContext('2d');
+    let stars = [];
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+
+    function initStars() {
+      stars = [];
+      for (let i = 0; i < 200; i++) {
+        stars.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          r: Math.random() * 1.2,
+          o: Math.random() * 0.6 + 0.1,
+          speed: Math.random() * 0.015 + 0.003,
+          phase: Math.random() * Math.PI * 2
+        });
+      }
+    }
+
+    function drawStars(t) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      stars.forEach(s => {
+        const opacity = s.o * (0.6 + 0.4 * Math.sin(t * s.speed + s.phase));
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(220,230,255,${opacity})`;
+        ctx.fill();
+      });
+    }
+
+    // ── DRONE EASTER EGG ──
+    const droneCanvas = document.getElementById('drone-canvas');
+    const dctx = droneCanvas.getContext('2d');
+
+    function resizeDroneCanvas() {
+      droneCanvas.width = window.innerWidth;
+      droneCanvas.height = window.innerHeight;
+    }
+
+    /*
+      Phases:
+        0 - FLY_IN:    smooth left→right glide near top, gentle bob, slowly shrinks
+        1 - VOLCANO:   volcano fades in, drone hovers near it, drops 4 packages around base
+        2 - FLY_AWAY:  drone accelerates right, shrinks to vanishing point
+    */
+    let drone = null;
+
+    // ARES button — only triggers if no sequence is running
+    const aresBtn = document.getElementById('ares-btn');
+    aresBtn.addEventListener('click', () => {
+      if (drone) return; // ignore if sequence in progress
+      aresBtn.classList.add('active');
+      spawnDrone();
+    });
+
+    function spawnDrone() {
+      drone = {
+        x: -60,
+        y: 82 + Math.random() * 14,
+        size: 26,
+        propAngle: 0,
+        bobPhase: Math.random() * Math.PI * 2,
+        phase: 0,
+        phaseTimer: 0,
+        opacity: 0,
+        // volcano scene
+        sceneOpacity: 0,
+        sceneX: 0, sceneY: 0,
+        // 4 drops: each has progress 0→1, landed flag, and position around base
+        drops: [],
+        dropIndex: 0,       // which drop is currently falling
+        dropTimer: 0,
+        allDropped: false,
+        erupting: false,
+        eruptTimer: 0,
+        streamlines: null,  // initialized on first update
+        gustPuffs: [],
+      };
+    }
+
+    // Side-profile traditional quadcopter
+    // Seen from the side: central body pod, 4 arms extending diagonally,
+    // circular prop guards at each tip with spinning blades, landing gear underneath
+    function drawSideDrone(s, propAngle, op) {
+      dctx.save();
+      dctx.globalAlpha = op;
+      dctx.strokeStyle = 'rgba(229,168,35,0.9)';
+      dctx.lineWidth = Math.max(0.8, s * 0.048);
+      dctx.lineCap = 'round';
+      dctx.lineJoin = 'round';
+
+      const lw = Math.max(0.8, s * 0.048);
+
+      // ── CENTRAL BODY: rounded hexagonal pod ──
+      const bw = s * 0.28, bh = s * 0.2;
+      dctx.beginPath();
+      // Hex-ish body from side: flat top/bottom, angled sides
+      dctx.moveTo(-bw,       0);
+      dctx.lineTo(-bw * 0.6, -bh);
+      dctx.lineTo( bw * 0.6, -bh);
+      dctx.lineTo( bw,        0);
+      dctx.lineTo( bw * 0.6,  bh);
+      dctx.lineTo(-bw * 0.6,  bh);
+      dctx.closePath();
+      dctx.stroke();
+
+      // Body detail: inner cross lines
+      dctx.beginPath();
+      dctx.moveTo(-bw * 0.55, 0); dctx.lineTo(bw * 0.55, 0);
+      dctx.stroke();
+      dctx.beginPath();
+      dctx.moveTo(0, -bh * 0.85); dctx.lineTo(0, bh * 0.85);
+      dctx.stroke();
+
+      // Center dot / flight controller
+      dctx.beginPath();
+      dctx.arc(0, 0, s * 0.05, 0, Math.PI * 2);
+      dctx.fillStyle = 'rgba(229,168,35,0.85)';
+      dctx.fill();
+
+      // ── 4 ARMS extending outward (X-frame layout, seen from slight above-side) ──
+      // Front-left, front-right, rear-left, rear-right
+      // From side view: front two arms go up-forward, rear two go down-back
+      const arms = [
+        { ax: -s * 0.72, ay: -s * 0.34 },  // front-left
+        { ax:  s * 0.72, ay: -s * 0.34 },  // front-right
+        { ax: -s * 0.68, ay:  s * 0.3  },  // rear-left
+        { ax:  s * 0.68, ay:  s * 0.3  },  // rear-right
+      ];
+
+      arms.forEach(arm => {
+        dctx.beginPath();
+        dctx.moveTo(arm.ax > 0 ? bw * 0.5 : -bw * 0.5, arm.ay > 0 ? bh * 0.6 : -bh * 0.6);
+        dctx.lineTo(arm.ax, arm.ay);
+        dctx.stroke();
+      });
+
+      // ── PROP GUARDS: circles at each arm tip ──
+      const guardR = s * 0.28;
+      arms.forEach((arm, i) => {
+        // Guard ring
+        dctx.beginPath();
+        dctx.arc(arm.ax, arm.ay, guardR, 0, Math.PI * 2);
+        dctx.stroke();
+
+        // Spinning propeller blade (from side: horizontal line, slight perspective oval)
+        const pRot = propAngle * (i % 2 === 0 ? 1 : -1);
+        const bladeL = guardR * 0.82;
+
+        dctx.save();
+        dctx.translate(arm.ax, arm.ay);
+
+        // 3 blur passes for spin effect
+        for (let b = 0; b < 3; b++) {
+          const ba = pRot + (b * Math.PI / 3);
+          const bop = b === 0 ? 0.9 : 0.2;
+          dctx.globalAlpha = op * bop;
+          dctx.lineWidth = Math.max(0.6, lw * 0.9);
+          dctx.strokeStyle = 'rgba(229,168,35,' + (b === 0 ? 0.85 : 0.25) + ')';
+
+          // Blade as thin ellipse (perspective foreshortening)
+          dctx.save();
+          dctx.rotate(ba);
+          dctx.beginPath();
+          // Left lobe
+          dctx.ellipse(-bladeL * 0.52, 0, bladeL * 0.5, bladeL * 0.13, 0, 0, Math.PI * 2);
+          dctx.stroke();
+          // Right lobe
+          dctx.ellipse( bladeL * 0.52, 0, bladeL * 0.5, bladeL * 0.13, 0, 0, Math.PI * 2);
+          dctx.stroke();
+          dctx.restore();
+        }
+
+        // Hub
+        dctx.globalAlpha = op;
+        dctx.strokeStyle = 'rgba(229,168,35,0.9)';
+        dctx.lineWidth = lw;
+        dctx.beginPath();
+        dctx.arc(0, 0, s * 0.04, 0, Math.PI * 2);
+        dctx.fillStyle = 'rgba(229,168,35,0.95)';
+        dctx.fill();
+
+        dctx.restore();
+      });
+
+      // ── LANDING GEAR: two struts hanging down from body ──
+      const lgX = [bw * 0.45, -bw * 0.45];
+      lgX.forEach(lx => {
+        dctx.strokeStyle = 'rgba(229,168,35,0.7)';
+        dctx.lineWidth = Math.max(0.6, lw * 0.7);
+        dctx.beginPath();
+        dctx.moveTo(lx, bh);
+        dctx.lineTo(lx, bh + s * 0.22);
+        dctx.stroke();
+      });
+      // Foot crossbar
+      dctx.beginPath();
+      dctx.moveTo(-bw * 0.62, bh + s * 0.22);
+      dctx.lineTo( bw * 0.62, bh + s * 0.22);
+      dctx.stroke();
+
+      // ── CAMERA POD: hanging below front of body ──
+      dctx.strokeStyle = 'rgba(229,168,35,0.8)';
+      dctx.lineWidth = lw;
+      dctx.beginPath();
+      dctx.arc(bw * 0.15, bh + s * 0.08, s * 0.09, 0, Math.PI * 2);
+      dctx.stroke();
+      dctx.beginPath();
+      dctx.arc(bw * 0.15, bh + s * 0.08, s * 0.04, 0, Math.PI * 2);
+      dctx.fillStyle = 'rgba(77,184,200,0.5)';
+      dctx.fill();
+
+      // ── LIDAR BOX: small rectangular sensor below body center ──
+      const lbW = s * 0.22, lbH = s * 0.12;
+      const lbX = -bw * 0.2, lbY = bh + s * 0.18;
+      dctx.strokeStyle = 'rgba(77,184,200,0.85)';
+      dctx.lineWidth = Math.max(0.5, lw * 0.75);
+      // Box outline
+      dctx.strokeRect(lbX - lbW / 2, lbY, lbW, lbH);
+      // Internal detail lines
+      dctx.beginPath();
+      dctx.moveTo(lbX - lbW * 0.28, lbY); dctx.lineTo(lbX - lbW * 0.28, lbY + lbH);
+      dctx.moveTo(lbX + lbW * 0.28, lbY); dctx.lineTo(lbX + lbW * 0.28, lbY + lbH);
+      dctx.stroke();
+      // LiDAR lens dot (center)
+      dctx.beginPath();
+      dctx.arc(lbX, lbY + lbH * 0.5, s * 0.03, 0, Math.PI * 2);
+      dctx.fillStyle = 'rgba(77,184,200,0.9)';
+      dctx.fill();
+      // LiDAR beam (thin teal line projecting downward)
+      dctx.strokeStyle = 'rgba(77,184,200,0.35)';
+      dctx.lineWidth = 0.6;
+      dctx.setLineDash([2, 3]);
+      dctx.beginPath();
+      dctx.moveTo(lbX, lbY + lbH);
+      dctx.lineTo(lbX, lbY + lbH + s * 0.55);
+      dctx.stroke();
+      dctx.setLineDash([]);
+      // Mounting strut from body to LiDAR box
+      dctx.strokeStyle = 'rgba(229,168,35,0.5)';
+      dctx.lineWidth = Math.max(0.5, lw * 0.6);
+      dctx.beginPath();
+      dctx.moveTo(lbX, bh * 0.9);
+      dctx.lineTo(lbX, lbY);
+      dctx.stroke();
+
+      // Subtle body glow
+      const grd = dctx.createRadialGradient(0, 0, 0, 0, 0, s * 0.5);
+      grd.addColorStop(0, 'rgba(229,168,35,0.06)');
+      grd.addColorStop(1, 'rgba(229,168,35,0)');
+      dctx.beginPath();
+      dctx.arc(0, 0, s * 0.5, 0, Math.PI * 2);
+      dctx.fillStyle = grd;
+      dctx.fill();
+
+      dctx.restore();
+    }
+
+    function drawVolcanoScene(d) {
+      const op = d.sceneOpacity;
+      if (op <= 0) return;
+
+      const sx = d.sceneX, sy = d.sceneY;
+      const vw = 42, vh = 32;
+
+      dctx.save();
+      dctx.globalAlpha = op;
+      dctx.strokeStyle = 'rgba(229,168,35,0.78)';
+      dctx.lineWidth = 1.1;
+      dctx.lineCap = 'round';
+      dctx.lineJoin = 'round';
+
+      // Volcano silhouette
+      dctx.beginPath();
+      dctx.moveTo(sx - vw, sy);
+      dctx.lineTo(sx - vw * 0.16, sy - vh);
+      dctx.lineTo(sx + vw * 0.16, sy - vh);
+      dctx.lineTo(sx + vw, sy);
+      dctx.stroke();
+
+      // Crater rim detail
+      dctx.beginPath();
+      dctx.ellipse(sx, sy - vh + 2, vw * 0.16, 3.5, 0, 0, Math.PI * 2);
+      dctx.stroke();
+
+      // 4 drop targets around the base (small X marks that appear after landing)
+      const basePositions = [
+        { ox: -vw * 0.72, oy: -4 },
+        { ox: -vw * 0.38, oy: -10 },
+        { ox:  vw * 0.38, oy: -10 },
+        { ox:  vw * 0.72, oy: -4 },
+      ];
+
+      d.drops.forEach((drop, idx) => {
+        const bp = basePositions[idx];
+        const tx = sx + bp.ox, ty = sy + bp.oy;
+
+        if (!drop.landed) {
+          // Falling package + parachute
+          const startY = sy - vh - 28;
+          const pkgY = startY + (ty - startY) * drop.progress;
+          const pkgS = 5.5;
+
+          dctx.strokeStyle = 'rgba(77,184,200,0.88)';
+          dctx.strokeRect(tx - pkgS / 2, pkgY - pkgS / 2, pkgS, pkgS);
+
+          if (drop.progress < 0.82) {
+            dctx.beginPath();
+            dctx.arc(tx, pkgY - pkgS / 2 - 6, 6, Math.PI, 0);
+            dctx.stroke();
+            dctx.beginPath();
+            dctx.moveTo(tx - 6, pkgY - pkgS / 2 - 6);
+            dctx.lineTo(tx - pkgS / 2, pkgY - pkgS / 2);
+            dctx.moveTo(tx + 6, pkgY - pkgS / 2 - 6);
+            dctx.lineTo(tx + pkgS / 2, pkgY - pkgS / 2);
+            dctx.stroke();
+          }
+          dctx.strokeStyle = 'rgba(229,168,35,0.78)';
+        } else {
+          // Landed — draw small impact X
+          const xr = 4;
+          dctx.strokeStyle = 'rgba(77,184,200,0.65)';
+          dctx.lineWidth = 0.9;
+          dctx.beginPath();
+          dctx.moveTo(tx - xr, ty - xr); dctx.lineTo(tx + xr, ty + xr);
+          dctx.moveTo(tx + xr, ty - xr); dctx.lineTo(tx - xr, ty + xr);
+          dctx.stroke();
+          dctx.strokeStyle = 'rgba(229,168,35,0.78)';
+          dctx.lineWidth = 1.1;
+        }
+      });
+
+      // Eruption from crater
+      if (d.erupting) {
+        const t = d.eruptTimer;
+        [
+          { vx: -0.7, vy: -2.4, r: 2.4 },
+          { vx:  0.0, vy: -2.9, r: 2.8 },
+          { vx:  0.8, vy: -2.1, r: 2.2 },
+          { vx: -1.3, vy: -1.7, r: 1.7 },
+          { vx:  1.4, vy: -1.6, r: 1.7 },
+          { vx: -0.3, vy: -3.2, r: 1.5 },
+        ].forEach(p => {
+          const px = sx + p.vx * t * 0.85;
+          const py = sy - vh + p.vy * t * 0.85 + 0.038 * t * t;
+          const alpha = Math.max(0, 1 - t / 60) * op;
+          dctx.beginPath();
+          dctx.arc(px, py, p.r, 0, Math.PI * 2);
+          dctx.fillStyle = `rgba(229,120,20,${alpha * 0.85})`;
+          dctx.fill();
+        });
+        // Crater glow
+        const gr = Math.min(t * 0.5, 14);
+        const grd = dctx.createRadialGradient(sx, sy - vh, 0, sx, sy - vh, gr);
+        grd.addColorStop(0, `rgba(229,100,20,${op * 0.45})`);
+        grd.addColorStop(1, 'rgba(229,100,20,0)');
+        dctx.beginPath();
+        dctx.arc(sx, sy - vh, gr, 0, Math.PI * 2);
+        dctx.fillStyle = grd;
+        dctx.fill();
+      }
+
+      dctx.restore();
+    }
+
+    function updateAndDrawDrone(t) {
+      if (!drone) return;
+      const d = drone;
+
+      d.propAngle += 0.38; // faster prop spin
+      d.bobPhase  += 0.045;
+      d.phaseTimer++;
+
+      // Wind turbulence — random gusts that build and release
+      if (!d.windGust)      d.windGust = 0;
+      if (!d.windPhase)     d.windPhase = Math.random() * Math.PI * 2;
+      if (!d.gustStrength)  d.gustStrength = 0;
+      if (!d.rollAngle)     d.rollAngle = 0;
+      if (!d.rollVelocity)  d.rollVelocity = 0;
+      if (!d.vertJitter)    d.vertJitter = 0;
+
+      d.windPhase += 0.028;
+      // Gust strength oscillates — simulates wind gusts building and dying
+      d.gustStrength = 0.55 + 0.45 * Math.sin(d.windPhase) + 0.25 * Math.sin(d.windPhase * 2.3 + 1.1);
+
+      // Roll physics: wind pushes drone to tilt, props fight back
+      const windTorque = d.gustStrength * 0.018 * Math.sin(d.windPhase * 1.7);
+      d.rollVelocity += windTorque;
+      d.rollVelocity += -d.rollAngle * 0.06;  // restoring force (drone self-corrects)
+      d.rollVelocity *= 0.88;                  // damping
+      d.rollAngle += d.rollVelocity;
+      d.rollAngle = Math.max(-0.38, Math.min(0.38, d.rollAngle)); // clamp
+
+      // Vertical jitter from wind
+      d.vertJitter = d.gustStrength * 2.8 * Math.sin(d.windPhase * 3.1 + 0.5);
+
+      // ── WIND STREAMLINES ──
+      // Persistent streamline paths that flow from right→left, curving around the drone body
+      if (!d.streamlines) {
+        // Each streamline: a horizontal lane at different Y offsets relative to drone
+        d.streamlines = [-38, -22, -10, 0, 10, 22, 38].map((yOff, i) => ({
+          yOff,
+          phase: (i / 7) * Math.PI * 2,   // staggered phase so they don't all pulse together
+          segments: [],                    // drawn trail segments
+          headX: d.x + 160 + i * 22,      // start off to the right
+          speed: 2.8 + i * 0.18,
+        }));
+      }
+
+      // Update + draw each streamline
+      d.streamlines.forEach((sl, si) => {
+        // Streamline head moves left at wind speed, modulated by gust
+        const windSpeed = (2.4 + d.gustStrength * 1.8) * (0.9 + 0.2 * Math.sin(sl.phase + d.windPhase));
+        sl.headX -= windSpeed;
+        sl.phase += 0.022;
+
+        // Y position: base lane + turbulence deflection near drone
+        const baseY = d.y + sl.yOff;
+        const distFromDrone = Math.abs(sl.headX - d.x);
+        // Deflection: streamlines arc up/down as they pass the drone body
+        const deflect = sl.yOff !== 0
+          ? (sl.yOff / Math.abs(sl.yOff)) * 6 * Math.exp(-distFromDrone * distFromDrone / 1800)
+          : 0;
+        // Turbulent flutter behind drone
+        const flutter = distFromDrone < 80 && sl.headX < d.x
+          ? Math.sin(sl.phase * 4.5) * d.gustStrength * 3.5
+          : 0;
+        const headY = baseY + deflect + flutter;
+
+        // Add new segment
+        sl.segments.push({ x: sl.headX, y: headY, g: d.gustStrength });
+
+        // Keep trail length proportional to speed
+        const maxLen = 55;
+        if (sl.segments.length > maxLen) sl.segments.shift();
+
+        // Draw the streamline as a smooth polyline
+        if (sl.segments.length < 3) return;
+
+        dctx.save();
+        dctx.lineCap = 'round';
+        dctx.lineJoin = 'round';
+
+        // Draw in segments with fading alpha toward the tail
+        for (let k = 1; k < sl.segments.length; k++) {
+          const t = k / sl.segments.length;
+          const seg = sl.segments[k];
+          const prev = sl.segments[k - 1];
+          const gust = seg.g;
+          const alpha = t * 0.18 * (0.5 + gust * 0.5);
+          dctx.globalAlpha = alpha * d.opacity;
+          dctx.strokeStyle = `rgba(180,210,255,0.9)`;
+          dctx.lineWidth = 0.55 + t * 0.5;
+          dctx.beginPath();
+          dctx.moveTo(prev.x, prev.y);
+          dctx.lineTo(seg.x, seg.y);
+          dctx.stroke();
+        }
+
+        // Arrowhead at the head of active streamlines (every other one)
+        if (si % 2 === 0 && sl.segments.length > 5) {
+          const head = sl.segments[sl.segments.length - 1];
+          const prev = sl.segments[sl.segments.length - 4];
+          const dx = head.x - prev.x, dy = head.y - prev.y;
+          const angle = Math.atan2(dy, dx);
+          const ar = 5;
+          dctx.globalAlpha = 0.22 * d.gustStrength * d.opacity;
+          dctx.strokeStyle = 'rgba(180,210,255,0.9)';
+          dctx.lineWidth = 0.7;
+          dctx.beginPath();
+          dctx.moveTo(head.x, head.y);
+          dctx.lineTo(head.x - ar * Math.cos(angle - 0.4), head.y - ar * Math.sin(angle - 0.4));
+          dctx.moveTo(head.x, head.y);
+          dctx.lineTo(head.x - ar * Math.cos(angle + 0.4), head.y - ar * Math.sin(angle + 0.4));
+          dctx.stroke();
+        }
+
+        dctx.restore();
+
+        // Reset streamline when it flies off left edge
+        if (sl.headX < d.x - 200) {
+          sl.headX = d.x + 140 + Math.random() * 80;
+          sl.segments = [];
+        }
+      });
+
+      // Spawn short burst turbulence puffs near drone when strong gusts hit
+      if (!d.gustPuffs) d.gustPuffs = [];
+      if (d.gustStrength > 0.85 && Math.random() < 0.25) {
+        d.gustPuffs.push({
+          x: d.x + 20 + Math.random() * 40,
+          y: d.y + (Math.random() - 0.5) * 50,
+          vx: -(3.5 + Math.random() * 2.5),
+          vy: (Math.random() - 0.5) * 1.2,
+          life: 1.0,
+          len: 18 + Math.random() * 26,
+          curl: (Math.random() - 0.5) * 0.15,
+        });
+      }
+      d.gustPuffs = d.gustPuffs.filter(p => {
+        p.x += p.vx;
+        p.y += p.vy + p.curl * p.life * 8;
+        p.life -= 0.045;
+        if (p.life <= 0) return false;
+        const alpha = p.life * p.life * 0.3 * d.gustStrength;
+        dctx.save();
+        dctx.globalAlpha = alpha * d.opacity;
+        dctx.strokeStyle = 'rgba(200,225,255,0.95)';
+        dctx.lineWidth = 0.8;
+        dctx.lineCap = 'round';
+        dctx.beginPath();
+        dctx.moveTo(p.x, p.y);
+        dctx.lineTo(p.x + p.len * (1 - p.life * 0.3), p.y + p.curl * 12);
+        dctx.stroke();
+        dctx.restore();
+        return true;
+      });
+
+      const bob = Math.sin(d.bobPhase) * 2.2 + d.vertJitter;
+
+      // ── PHASE 0: FLY IN ──
+      if (d.phase === 0) {
+        d.opacity = Math.min(0.88, d.opacity + 0.025);
+        d.x += 1.9; // faster
+        d.size = 26 - (d.x / droneCanvas.width) * 14;
+
+        dctx.save();
+        dctx.translate(d.x, d.y + bob);
+        dctx.rotate(d.rollAngle);
+        drawSideDrone(d.size, d.propAngle, d.opacity);
+        dctx.restore();
+
+        if (d.x > droneCanvas.width * 0.76) {
+          d.phase = 1;
+          d.phaseTimer = 0;
+          d.sceneX = droneCanvas.width * 0.87;
+          d.sceneY = 118;
+          d.drops = [0,1,2,3].map(() => ({ progress: 0, landed: false }));
+          d.dropIndex = 0;
+          d.dropTimer = 0;
+        }
+      }
+
+      // ── PHASE 1: VOLCANO + 4 DROPS ──
+      else if (d.phase === 1) {
+        const hoverX = d.sceneX - 55;
+        d.x += (hoverX - d.x) * 0.04;
+        d.size = Math.max(10, d.size);
+        d.opacity = Math.min(0.88, d.opacity + 0.01);
+
+        dctx.save();
+        dctx.translate(d.x, d.y + bob);
+        dctx.rotate(d.rollAngle);
+        drawSideDrone(d.size, d.propAngle, d.opacity);
+        dctx.restore();
+
+        d.sceneOpacity = Math.min(1, d.sceneOpacity + 0.038);
+
+        if (d.sceneOpacity > 0.5) {
+          d.dropTimer++;
+          const activeIdx = d.dropIndex;
+          if (activeIdx < 4) {
+            const drop = d.drops[activeIdx];
+            drop.progress = Math.min(1, drop.progress + 0.016);
+            if (drop.progress >= 1) {
+              drop.landed = true;
+              d.dropIndex++;
+              d.dropTimer = 0;
+            }
+          }
+        }
+
+        if (d.dropIndex >= 4 && !d.erupting) {
+          d.erupting = true;
+          d.eruptTimer = 0;
+        }
+        if (d.erupting) d.eruptTimer++;
+
+        drawVolcanoScene(d);
+
+        if (d.eruptTimer > 70) {
+          d.phase = 2;
+          d.phaseTimer = 0;
+        }
+      }
+
+      // ── PHASE 2: FLY AWAY into distance ──
+      else if (d.phase === 2) {
+        const t2 = d.phaseTimer;
+        const accel = 2.2 + t2 * 0.12; // faster zoom-away
+        d.x += accel;
+        const vpY = droneCanvas.height * 0.5;
+        d.y += (vpY - d.y) * 0.025;
+        d.size = Math.max(0, d.size - 0.25);
+        d.opacity = Math.max(0, d.opacity - 0.018);
+
+        if (d.size > 0.4) {
+          dctx.save();
+          dctx.translate(d.x, d.y + bob * (d.size / 12));
+          dctx.rotate(d.rollAngle * 0.5);
+          drawSideDrone(d.size, d.propAngle, d.opacity);
+          dctx.restore();
+        }
+
+        d.sceneOpacity = Math.max(0, d.sceneOpacity - 0.018);
+        if (d.sceneOpacity > 0) drawVolcanoScene(d);
+
+        if (d.opacity <= 0 && d.sceneOpacity <= 0) {
+          drone = null;
+          aresBtn.classList.remove('active');
+        }
+      }
+    }
+
+    let frame = 0;
+    function tick() {
+      frame++;
+      drawStars(frame);
+      dctx.clearRect(0, 0, droneCanvas.width, droneCanvas.height);
+      updateAndDrawDrone(frame);
+      requestAnimationFrame(tick);
+    }
+
+    window.addEventListener('resize', () => {
+      resizeCanvas(); initStars();
+      resizeDroneCanvas();
+    });
+
+    resizeCanvas();
+    initStars();
+    resizeDroneCanvas();
+    tick();
+
+
+    // ── HERO SCENE: Earth · CubeSat · Moon ──
+    (function() {
+      const sc = document.getElementById('scene-canvas');
+      if (!sc) return;
+
+      const GOLD  = '#E5A823';
+      const TEAL  = '#4db8c8';
+      const NAVY  = 'rgba(5,13,26,1)';
+
+      function resize() {
+        sc.width  = sc.offsetWidth  * (window.devicePixelRatio || 1);
+        sc.height = sc.offsetHeight * (window.devicePixelRatio || 1);
+      }
+      resize();
+      window.addEventListener('resize', resize);
+
+      const c = sc.getContext('2d');
+
+      // ── NASA BLUE MARBLE ──
+      const earthImg = new Image();
+      earthImg.crossOrigin = 'anonymous';
+      earthImg.src = 'https://eoimages.gsfc.nasa.gov/images/imagerecords/73000/73909/world.topo.bathy.200412.3x2048x1024.jpg';
+      let earthLoaded = false;
+      earthImg.onload  = () => { earthLoaded = true; };
+      earthImg.onerror = () => { earthLoaded = false; };
+
+      function glow(blur, color) { c.shadowBlur = blur; c.shadowColor = color; }
+      function noGlow()          { c.shadowBlur = 0; }
+
+      // ── PHOTO EVENT STATE ──
+      // Triggered when sat is within proximity of moon
+      let photoEvent = null; // { age: 0, satX, satY, moonX, moonY }
+      const PHOTO_DURATION = 52; // frames
+
+      // ── DRAW EARTH ──
+      function drawEarth(cx, cy, r, t) {
+        c.save();
+        if (earthLoaded) {
+          const texW = earthImg.naturalWidth;
+          const texH = earthImg.naturalHeight;
+          const diameter = r * 2;
+          const off = document.createElement('canvas');
+          off.width  = Math.ceil(diameter);
+          off.height = Math.ceil(diameter);
+          const oc = off.getContext('2d');
+          oc.beginPath();
+          oc.arc(r, r, r, 0, Math.PI * 2);
+          oc.clip();
+          const scrollFrac = (t * 0.0006) % 1;
+          const scrollPx   = scrollFrac * texW;
+          const firstW = texW - scrollPx;
+          oc.drawImage(earthImg, scrollPx, 0, firstW,   texH, 0,                      0, (firstW/texW)*diameter, diameter);
+          oc.drawImage(earthImg, 0,        0, scrollPx, texH, (firstW/texW)*diameter, 0, (scrollPx/texW)*diameter, diameter);
+          const shadeGrd = oc.createRadialGradient(r*0.35,r*0.25,0, r*0.5,r*0.5,r*1.05);
+          shadeGrd.addColorStop(0,   'rgba(255,255,255,0.06)');
+          shadeGrd.addColorStop(0.55,'rgba(0,0,0,0)');
+          shadeGrd.addColorStop(0.78,'rgba(0,0,20,0.35)');
+          shadeGrd.addColorStop(1,   'rgba(0,0,20,0.72)');
+          oc.fillStyle = shadeGrd; oc.fillRect(0,0,diameter,diameter);
+          const nightGrd = oc.createRadialGradient(r*1.45,r*0.5,0, r*1.45,r*0.5,r*1.1);
+          nightGrd.addColorStop(0,   'rgba(0,0,10,0)');
+          nightGrd.addColorStop(0.45,'rgba(0,0,10,0)');
+          nightGrd.addColorStop(0.72,'rgba(0,0,10,0.5)');
+          nightGrd.addColorStop(1,   'rgba(0,0,10,0.88)');
+          oc.fillStyle = nightGrd; oc.fillRect(0,0,diameter,diameter);
+          c.save();
+          c.beginPath(); c.arc(cx,cy,r,0,Math.PI*2); c.clip();
+          c.drawImage(off, cx-r, cy-r);
+          c.restore();
+          const atmo = c.createRadialGradient(cx,cy,r*0.95, cx,cy,r*1.28);
+          atmo.addColorStop(0,   'rgba(100,180,255,0.22)');
+          atmo.addColorStop(0.4, 'rgba(80,160,240,0.08)');
+          atmo.addColorStop(1,   'rgba(60,120,200,0)');
+          c.beginPath(); c.arc(cx,cy,r*1.28,0,Math.PI*2);
+          c.fillStyle=atmo; c.fill();
+          const spec = c.createRadialGradient(cx-r*0.28,cy-r*0.28,0, cx-r*0.28,cy-r*0.28,r*0.55);
+          spec.addColorStop(0,'rgba(255,255,255,0.09)');
+          spec.addColorStop(1,'rgba(255,255,255,0)');
+          c.beginPath(); c.arc(cx,cy,r,0,Math.PI*2);
+          c.fillStyle=spec; c.fill();
+          glow(12,'rgba(100,180,255,0.6)');
+          c.beginPath(); c.arc(cx,cy,r,0,Math.PI*2);
+          c.strokeStyle='rgba(120,190,255,0.55)'; c.lineWidth=1.2; c.stroke();
+          noGlow();
+        } else {
+          // wireframe fallback
+          c.beginPath(); c.arc(cx,cy,r,0,Math.PI*2);
+          glow(18,TEAL); c.strokeStyle=TEAL; c.lineWidth=1.5; c.stroke(); noGlow();
+          [-0.45,0,0.45].forEach(lat => {
+            const ry2=r*Math.cos(lat), y2=cy+r*Math.sin(lat);
+            c.beginPath(); c.ellipse(cx,y2,ry2,ry2*0.18,0,0,Math.PI*2);
+            c.strokeStyle='rgba(77,184,200,0.25)'; c.lineWidth=0.8; c.stroke();
+          });
+          for(let i=0;i<4;i++){
+            const ang=(i/4)*Math.PI+t*0.004;
+            c.save(); c.translate(cx,cy); c.rotate(ang);
+            c.beginPath(); c.ellipse(0,0,r*0.18,r,0,0,Math.PI*2);
+            c.strokeStyle='rgba(77,184,200,0.18)'; c.lineWidth=0.7; c.stroke();
+            c.restore();
+          }
+        }
+        c.restore();
+      }
+
+      // ── DRAW 2U CUBESAT ──
+      function drawCubeSat(cx, cy, heading, size, flash) {
+        c.save();
+        c.translate(cx, cy);
+        c.rotate(heading);
+
+        const w = size * 0.5, h = size;
+
+        // Flash glow overlay
+        if (flash > 0) {
+          glow(28 * flash, `rgba(255,255,200,${flash})`);
+        } else {
+          glow(14, GOLD);
+        }
+        c.strokeStyle = flash > 0 ? `rgba(255,255,200,${0.6+flash*0.4})` : GOLD;
+        c.lineWidth = 1.4 + flash * 1.2;
+        c.strokeRect(-w/2,-h/2,w,h);
+        noGlow();
+
+        c.strokeStyle='rgba(229,168,35,0.35)'; c.lineWidth=0.7;
+        c.beginPath(); c.moveTo(-w/2,0); c.lineTo(w/2,0); c.stroke();
+        [-1,1].forEach(s=>{
+          c.beginPath(); c.moveTo(-w/2,s*h*0.06); c.lineTo(w/2,s*h*0.06); c.stroke();
+        });
+
+        const panelW=size*0.85, panelH=size*0.28, panelY=-h*0.18;
+        [-1,1].forEach(side=>{
+          const px=side*(w/2), pw=side*panelW;
+          glow(flash>0?18:10, flash>0?`rgba(255,255,200,${flash*0.8})`:GOLD);
+          c.strokeStyle=flash>0?`rgba(255,255,200,${0.5+flash*0.5})`:GOLD;
+          c.lineWidth=1.2; c.strokeRect(px,panelY-panelH/2,pw,panelH); noGlow();
+          c.strokeStyle='rgba(229,168,35,0.3)'; c.lineWidth=0.5;
+          for(let i=1;i<4;i++){
+            const lx=px+pw*(i/4);
+            c.beginPath(); c.moveTo(lx,panelY-panelH/2); c.lineTo(lx,panelY+panelH/2); c.stroke();
+          }
+        });
+
+        glow(6,GOLD); c.strokeStyle='rgba(229,168,35,0.7)'; c.lineWidth=0.8;
+        c.beginPath(); c.moveTo(0,-h/2); c.lineTo(0,-h/2-size*0.55); c.stroke(); noGlow();
+
+        // Small camera lens on front face (top of body)
+        const lensR = size * 0.09;
+        const lensX = 0, lensY = -h/2 + size*0.12;
+        glow(flash>0?14:5, flash>0?'rgba(255,255,180,0.9)':'rgba(77,184,200,0.8)');
+        c.beginPath(); c.arc(lensX, lensY, lensR, 0, Math.PI*2);
+        c.strokeStyle = flash>0 ? `rgba(255,255,180,${0.7+flash*0.3})` : 'rgba(77,184,200,0.85)';
+        c.lineWidth = 0.9; c.stroke();
+        // Inner lens dot
+        c.beginPath(); c.arc(lensX, lensY, lensR*0.45, 0, Math.PI*2);
+        c.fillStyle = flash>0 ? `rgba(255,255,200,${flash})` : 'rgba(77,184,200,0.4)';
+        c.fill(); noGlow();
+
+        // Flash burst — 4 short lines radiating from lens
+        if (flash > 0.05) {
+          c.strokeStyle = `rgba(255,255,200,${flash * 0.85})`;
+          c.lineWidth = 0.7;
+          for (let i = 0; i < 4; i++) {
+            const ba = (i / 4) * Math.PI * 2 + Math.PI/4;
+            const r1 = lensR * 1.5, r2 = lensR * (2.2 + flash * 1.5);
+            glow(8 * flash, 'rgba(255,255,200,0.9)');
+            c.beginPath();
+            c.moveTo(lensX + Math.cos(ba)*r1, lensY + Math.sin(ba)*r1);
+            c.lineTo(lensX + Math.cos(ba)*r2, lensY + Math.sin(ba)*r2);
+            c.stroke();
+          }
+          noGlow();
+        }
+
+        const br=4; c.strokeStyle='rgba(229,168,35,0.5)'; c.lineWidth=0.8;
+        [[-w/2,-h/2],[w/2,-h/2],[-w/2,h/2],[w/2,h/2]].forEach(([bx,by])=>{
+          const sx=bx<0?1:-1,sy=by<0?1:-1;
+          c.beginPath(); c.moveTo(bx+sx*br,by); c.lineTo(bx,by); c.lineTo(bx,by+sy*br); c.stroke();
+        });
+
+        c.restore();
+      }
+
+      // ── DRAW MOON WITH PHASE ──
+      // phase: 0=new, 0.25=first quarter, 0.5=full, 0.75=last quarter, 1=new
+      // crescent = phase near 0 or 1
+      function drawMoon(cx, cy, r, phase) {
+        c.save();
+        c.translate(cx, cy);
+
+        // Outer halo
+        const haloAlpha = 0.04 + 0.1 * Math.abs(Math.sin(phase * Math.PI));
+        const halo = c.createRadialGradient(0,0,r*0.7,0,0,r*1.7);
+        halo.addColorStop(0,`rgba(240,230,180,${haloAlpha*2})`);
+        halo.addColorStop(1,'rgba(240,230,180,0)');
+        c.beginPath(); c.arc(0,0,r*1.7,0,Math.PI*2);
+        c.fillStyle=halo; c.fill();
+
+        // Ghost disc outline
+        c.beginPath(); c.arc(0,0,r,0,Math.PI*2);
+        c.strokeStyle='rgba(240,230,180,0.1)'; c.lineWidth=0.6; c.stroke();
+
+        // Draw lit portion via clip + shadow disc technique
+        c.save();
+        c.beginPath(); c.arc(0,0,r,0,Math.PI*2); c.clip();
+
+        // Fill full disc with moon colour
+        c.beginPath(); c.arc(0,0,r,0,Math.PI*2);
+        const moonFill = c.createRadialGradient(-r*0.2,-r*0.2,0, 0,0,r);
+        moonFill.addColorStop(0,  'rgba(255,248,220,0.92)');
+        moonFill.addColorStop(0.6,'rgba(220,210,175,0.75)');
+        moonFill.addColorStop(1,  'rgba(180,170,140,0.5)');
+        c.fillStyle = moonFill; c.fill();
+
+        // Shadow disc — offset depends on phase
+        // phase 0→0.5: shadow moves right→left (waxing)
+        // phase 0.5→1: shadow moves left→right (waning)
+        // At phase=0 (new): completely covered. phase=0.5 (full): uncovered.
+        let shadowOffsetX;
+        let shadowScale;
+        if (phase <= 0.5) {
+          // waxing: shadow retreats to the left
+          const p = phase / 0.5; // 0→1
+          shadowOffsetX = r * (1 - p * 2); // +r → -r
+          shadowScale   = 1.0;
+        } else {
+          // waning: shadow advances from the right
+          const p = (phase - 0.5) / 0.5; // 0→1
+          shadowOffsetX = r * (-1 + p * 2); // -r → +r
+          shadowScale   = 1.0;
+        }
+
+        // At terminator: use ellipse whose x-radius morphs
+        // The terminator is an ellipse: at quarter = flat line (rx=0), at new/full = full disc
+        const termRx = Math.abs(Math.cos(phase * Math.PI * 2)) * r;
+        const termSide = phase < 0.5 ? 1 : -1; // which side shadow is on
+
+        // Draw shadow as clipped half-disc + terminator ellipse
+        c.beginPath();
+        // Half the disc on shadow side
+        if (termSide > 0) {
+          c.arc(0, 0, r, -Math.PI/2, Math.PI/2); // right half
+        } else {
+          c.arc(0, 0, r, Math.PI/2, -Math.PI/2); // left half
+        }
+        c.closePath();
+        c.fillStyle = 'rgba(5,13,26,0.97)'; c.fill();
+
+        // Terminator ellipse covers/reveals the other half
+        c.beginPath();
+        if (termRx > 0.01) {
+          c.ellipse(0, 0, termRx, r, 0, 0, Math.PI*2);
+        }
+        // At new/full moon: termRx ≈ r, so full disc covered/uncovered
+        if (phase < 0.5) {
+          // waxing: fill terminator ellipse with shadow (right of centre is still dark)
+          c.fillStyle = termSide > 0 ? 'rgba(5,13,26,0.97)' : moonFill;
+        } else {
+          c.fillStyle = termSide < 0 ? 'rgba(5,13,26,0.97)' : moonFill;
+        }
+        // Simpler approach that works cleanly:
+        // Paint terminator disc over the right split
+        c.beginPath();
+        c.ellipse(0, 0, Math.max(0.01, termRx), r, 0, 0, Math.PI*2);
+        // If waxing: terminator is the lit boundary (fill lit side)
+        // If waning: terminator is the shadow boundary (fill shadow side)
+        const fillShadow = (phase < 0.5 && termSide > 0) || (phase >= 0.5 && termSide < 0);
+        c.fillStyle = fillShadow ? moonFill : 'rgba(5,13,26,0.97)';
+        c.fill();
+
+        c.restore();
+
+        // Limb glow — brighter at full
+        const limbAlpha = 0.25 + 0.65 * Math.abs(Math.sin(phase * Math.PI));
+        glow(14, `rgba(240,230,180,${limbAlpha})`);
+        c.beginPath(); c.arc(0,0,r,0,Math.PI*2);
+        c.strokeStyle=`rgba(240,230,180,${limbAlpha * 0.85})`;
+        c.lineWidth=1.1; c.stroke(); noGlow();
+
+        // Craters
+        [[r*0.2,-r*0.15,r*0.08],[-r*0.1,r*0.25,r*0.055],[-r*0.3,-r*0.3,r*0.07],
+         [r*0.05,r*0.38,r*0.045]].forEach(([mx,my,mr])=>{
+          c.beginPath(); c.arc(mx,my,mr,0,Math.PI*2);
+          c.strokeStyle='rgba(160,150,120,0.2)'; c.lineWidth=0.5; c.stroke();
+        });
+
+        c.restore();
+      }
+
+      // ── DRAW PHOTO FRAME EVENT ──
+      function drawPhotoFrame(moonX, moonY, moonR, age) {
+        const progress = age / PHOTO_DURATION;
+        // Appear fast, hold, fade out
+        let alpha;
+        if (progress < 0.15) alpha = progress / 0.15;
+        else if (progress < 0.7) alpha = 1.0;
+        else alpha = 1 - (progress - 0.7) / 0.3;
+        alpha = Math.max(0, Math.min(1, alpha));
+
+        const fw = moonR * 2.6;
+        const fh = moonR * 2.2;
+        const fx = moonX - fw/2;
+        const fy = moonY - fh/2;
+        const cr = 4; // corner radius
+
+        c.save();
+        c.globalAlpha = alpha;
+
+        // Frame outline with rounded corners
+        glow(10, 'rgba(229,168,35,0.8)');
+        c.strokeStyle = GOLD;
+        c.lineWidth = 1.2;
+        c.beginPath();
+        c.moveTo(fx+cr, fy);
+        c.lineTo(fx+fw-cr, fy); c.quadraticCurveTo(fx+fw,fy, fx+fw,fy+cr);
+        c.lineTo(fx+fw, fy+fh-cr); c.quadraticCurveTo(fx+fw,fy+fh, fx+fw-cr,fy+fh);
+        c.lineTo(fx+cr, fy+fh); c.quadraticCurveTo(fx,fy+fh, fx,fy+fh-cr);
+        c.lineTo(fx, fy+cr); c.quadraticCurveTo(fx,fy, fx+cr,fy);
+        c.closePath();
+        c.stroke();
+        noGlow();
+
+        // Corner bracket accents
+        const bLen = 10;
+        c.strokeStyle = 'rgba(229,168,35,0.9)';
+        c.lineWidth = 1.8;
+        [[fx,fy,1,1],[fx+fw,fy,-1,1],[fx,fy+fh,1,-1],[fx+fw,fy+fh,-1,-1]].forEach(([bx,by,sx,sy])=>{
+          c.beginPath();
+          c.moveTo(bx+sx*bLen, by); c.lineTo(bx,by); c.lineTo(bx,by+sy*bLen);
+          c.stroke();
+        });
+
+        // Crosshair in centre
+        const chSize = moonR * 0.28;
+        c.strokeStyle = 'rgba(229,168,35,0.55)';
+        c.lineWidth = 0.7;
+        c.setLineDash([2,3]);
+        c.beginPath();
+        c.moveTo(moonX - chSize, moonY); c.lineTo(moonX + chSize, moonY);
+        c.moveTo(moonX, moonY - chSize); c.lineTo(moonX, moonY + chSize);
+        c.stroke();
+        c.setLineDash([]);
+
+        // "IMG CAPTURED" label
+        if (progress > 0.12 && progress < 0.88) {
+          c.font = `${moonR * 0.22}px "Share Tech Mono", monospace`;
+          c.fillStyle = `rgba(229,168,35,${alpha * 0.9})`;
+          c.textAlign = 'center';
+          c.fillText('IMG CAPTURED', moonX, fy - moonR * 0.18);
+          // Shutter count
+          c.font = `${moonR * 0.17}px "Share Tech Mono", monospace`;
+          c.fillStyle = `rgba(229,168,35,${alpha * 0.55})`;
+          c.fillText('CRESCENT · AI PIPELINE', moonX, fy + fh + moonR * 0.25);
+        }
+
+        c.globalAlpha = 1;
+        c.restore();
+      }
+
+      // ── ORBIT TRAILS ──
+      function drawOrbitTrail(cx,cy,rx,ry,tilt,color,dash1,dash2,alpha) {
+        c.save(); c.translate(cx,cy); c.rotate(tilt);
+        c.beginPath(); c.ellipse(0,0,rx,ry,0,0,Math.PI*2);
+        c.strokeStyle=`rgba(${color},${alpha})`;
+        c.setLineDash([dash1,dash2]); c.lineWidth=0.7; c.stroke();
+        c.setLineDash([]); c.restore();
+      }
+
+      // ── MAIN LOOP ──
+      let t = 0;
+      let lastPhotoAngle = -999;
+
+      function drawScene() {
+        t++;
+        const W = sc.width, H = sc.height;
+        c.clearRect(0,0,W,H);
+        const cx = W*0.5, cy = H*0.5;
+
+        const earthR      = W * 0.175;
+        const satOrbitRx  = W * 0.34;
+        const satOrbitRy  = W * 0.14;
+        const satTilt     = -0.3;
+        const satAngle    = t * 0.004;
+
+        const moonOrbitRx = W * 0.44;
+        const moonOrbitRy = W * 0.19;
+        const moonTilt    = 0.22;
+        const moonAngle   = t * 0.0012;
+
+        // ── MOON PHASE based on angular distance between sat and moon ──
+        // When sat is close to moon → crescent (phase ≈ 0.08)
+        // When sat is far (opposite side) → full moon (phase ≈ 0.5)
+        // Map angular separation 0→π to phase 0.08→0.5
+        const angDiff = ((satAngle - moonAngle) % (Math.PI * 2) + Math.PI * 2) % (Math.PI * 2);
+        const normDiff = angDiff / (Math.PI * 2); // 0→1
+        // Smooth sinusoidal mapping: 0=crescent, 0.5=full, 1=crescent again
+        const moonPhase = 0.06 + 0.44 * Math.abs(Math.sin(normDiff * Math.PI));
+
+        // ── SAT POSITION ──
+        const satX = cx + Math.cos(satAngle)*satOrbitRx*Math.cos(satTilt)
+                        - Math.sin(satAngle)*satOrbitRy*Math.sin(satTilt);
+        const satY = cy + Math.cos(satAngle)*satOrbitRx*Math.sin(satTilt)
+                        + Math.sin(satAngle)*satOrbitRy*Math.cos(satTilt);
+
+        // ── MOON POSITION ──
+        const moonX = cx + Math.cos(moonAngle)*moonOrbitRx*Math.cos(moonTilt)
+                         - Math.sin(moonAngle)*moonOrbitRy*Math.sin(moonTilt);
+        const moonY = cy + Math.cos(moonAngle)*moonOrbitRx*Math.sin(moonTilt)
+                         + Math.sin(moonAngle)*moonOrbitRy*Math.cos(moonTilt);
+
+        // ── PROXIMITY CHECK — trigger photo when sat is close AND moon is crescent ──
+        const dist = Math.hypot(satX - moonX, satY - moonY);
+        const proximityThreshold = W * 0.22;
+        const isCrescent = moonPhase < 0.18;
+        const isClose    = dist < proximityThreshold;
+
+        if (isCrescent && isClose) {
+          // Debounce: only one photo per approach
+          const angularGap = Math.abs(satAngle - lastPhotoAngle);
+          if (angularGap > 0.8 || lastPhotoAngle === -999) {
+            photoEvent = { age: 0, satX, satY, moonX, moonY };
+            lastPhotoAngle = satAngle;
+          }
+        }
+
+        // Advance photo event
+        if (photoEvent) {
+          photoEvent.age++;
+          if (photoEvent.age > PHOTO_DURATION) photoEvent = null;
+        }
+
+        // Flash intensity for CubeSat (0→1→0 over first third of event)
+        let flash = 0;
+        if (photoEvent) {
+          const fp = photoEvent.age / PHOTO_DURATION;
+          if (fp < 0.08) flash = fp / 0.08;
+          else if (fp < 0.22) flash = 1 - (fp - 0.08) / 0.14;
+        }
+
+        // ── DRAW ──
+        drawOrbitTrail(cx,cy,satOrbitRx,satOrbitRy,satTilt,'229,168,35',4,8,0.18);
+        drawOrbitTrail(cx,cy,moonOrbitRx,moonOrbitRy,moonTilt,'240,230,180',3,14,0.1);
+
+        drawEarth(cx,cy,earthR,t);
+
+        // Draw photo frame behind moon so moon renders on top
+        if (photoEvent) {
+          drawPhotoFrame(moonX, moonY, W*0.072, photoEvent.age);
+        }
+
+        drawMoon(moonX, moonY, W*0.072, moonPhase);
+
+        const heading = Math.atan2(
+          -Math.sin(satAngle)*satOrbitRx*Math.sin(satTilt)+Math.cos(satAngle)*satOrbitRy*Math.cos(satTilt),
+          -Math.sin(satAngle)*satOrbitRx*Math.cos(satTilt)-Math.cos(satAngle)*satOrbitRy*Math.sin(satTilt)
+        ) + Math.PI/2;
+        const depthScale = 0.82 + 0.18*(satY-cy)/satOrbitRy;
+        drawCubeSat(satX, satY, heading, W*0.052*depthScale, flash);
+
+        requestAnimationFrame(drawScene);
+      }
+
+      drawScene();
+    })();
+
+    // ── SCROLL REVEAL ──
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12 });
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  </script>
+</body>
+</html>
